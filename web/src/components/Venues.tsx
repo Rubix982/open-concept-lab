@@ -70,7 +70,7 @@ function VenueCard({ venue }: { venue: Venue }): ReactNode {
   );
 }
 
-function VenueBody({ venue }: { venue: Venue }): ReactNode {
+function VenueBody({ venue, withAsks = true }: { venue: Venue; withAsks?: boolean }): ReactNode {
   return (
     <>
       <p className="ocl-venue__when">
@@ -78,7 +78,7 @@ function VenueBody({ venue }: { venue: Venue }): ReactNode {
         {venue.where ? ` · ${venue.where}` : ""}
       </p>
 
-      <p className="ocl-venue__asks">{venue.asks}</p>
+      {withAsks ? <p className="ocl-venue__asks">{venue.asks}</p> : null}
 
       {venue.note ? <p className="ocl-venue__note">{venue.note}</p> : null}
 
@@ -121,51 +121,66 @@ function VenueBody({ venue }: { venue: Venue }): ReactNode {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY = 86_400_000;
 
+/**
+ * Two readings of the same list. Looking ahead, a row is a deadline and its
+ * second line is what is due. Looking back, a row is the event and its second
+ * line is what the venue asked for, because that is what a look-back is read for.
+ */
+type Mode = "deadlines" | "events";
+
+const dateOf = (v: Venue, mode: Mode): string | undefined => (mode === "events" ? v.held : v.deadline);
+
 function parseDay(iso: string): Date {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
 
 /** A checked date gets its day; an estimated one only its month, since the day would be invented. */
-function dateLabel(v: Venue): string {
-  if (!v.deadline) return "—";
-  const d = parseDay(v.deadline);
+function dateLabel(v: Venue, mode: Mode): string {
+  const iso = dateOf(v, mode);
+  if (!iso) return "—";
+  const d = parseDay(iso);
   return v.verified ? `${d.getDate()} ${MONTHS[d.getMonth()]}` : `~${MONTHS[d.getMonth()]}`;
 }
 
-function daysLeft(v: Venue, today: Date): number | null {
-  return v.deadline ? Math.round((parseDay(v.deadline).getTime() - today.getTime()) / DAY) : null;
+function daysLeft(v: Venue, mode: Mode, today: Date): number | null {
+  const iso = dateOf(v, mode);
+  return iso ? Math.round((parseDay(iso).getTime() - today.getTime()) / DAY) : null;
 }
 
-function leftLabel(n: number, estimated: boolean): string {
-  if (n < 0) return "closed";
+function leftLabel(n: number, estimated: boolean, mode: Mode): string {
+  if (n < 0) return mode === "events" ? "held" : "closed";
   if (n === 0) return "today";
   if (n === 1) return "tomorrow";
   const s = n < 60 ? `${n} days` : n < 120 ? `${Math.round(n / 7)} weeks` : `${Math.round(n / 30.4)} months`;
   return estimated ? `~${s}` : s;
 }
 
-function VenueRow({ venue, today }: { venue: Venue; today: Date | null }): ReactNode {
-  const n = today ? daysLeft(venue, today) : null;
-  const soon = n !== null && n >= 0 && n <= 30 && venue.verified;
+function VenueRow({ venue, today, mode }: { venue: Venue; today: Date | null; mode: Mode }): ReactNode {
+  const n = today ? daysLeft(venue, mode, today) : null;
+  const soon = mode === "deadlines" && n !== null && n >= 0 && n <= 30 && venue.verified;
+  const second = mode === "events" ? venue.asks : venue.due;
   return (
     <details className={`ocl-due${soon ? " ocl-due--soon" : ""}`} id={venue.id}>
       <summary className="ocl-due__row">
         <span className="ocl-due__date">
-          <span className="ocl-due__day">{dateLabel(venue)}</span>
-          <span className="ocl-due__left">{n !== null ? leftLabel(n, !venue.verified) : " "}</span>
+          <span className="ocl-due__day">{dateLabel(venue, mode)}</span>
+          <span className="ocl-due__left">{n !== null ? leftLabel(n, !venue.verified, mode) : "\u00a0"}</span>
         </span>
         <span className="ocl-due__what">
           <span className="ocl-due__name">
             {venue.name}
             <span className="ocl-due__series">{venue.series}</span>
+            {mode === "events" && !venue.verified ? (
+              <span className="ocl-check ocl-check--no ocl-due__flag">unchecked</span>
+            ) : null}
           </span>
-          {venue.due ? <span className="ocl-due__text">{venue.due}</span> : null}
+          {second ? <span className="ocl-due__text">{second}</span> : null}
         </span>
         <span className="ocl-due__kind">{venue.kind}</span>
       </summary>
       <div className="ocl-due__body">
-        <VenueBody venue={venue} />
+        <VenueBody venue={venue} withAsks={mode !== "events"} />
         {venue.url ? (
           <p className="ocl-due__link">
             <a href={venue.url} target="_blank" rel="noreferrer">
@@ -178,7 +193,7 @@ function VenueRow({ venue, today }: { venue: Venue; today: Date | null }): React
   );
 }
 
-function Timeline({ venues }: { venues: Venue[] }): ReactNode {
+function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode {
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => {
     const now = new Date();
@@ -188,10 +203,38 @@ function Timeline({ venues }: { venues: Venue[] }): ReactNode {
     if (hash) document.getElementById(hash)?.setAttribute("open", "");
   }, []);
 
-  const dated = venues.filter((v) => v.deadline);
-  const closed = today ? dated.filter((v) => (daysLeft(v, today) ?? 0) < 0) : [];
+  const row = (v: Venue) => (
+    <li key={v.id}>
+      <VenueRow venue={v} today={today} mode={mode} />
+    </li>
+  );
+  const group = (label: string, list: Venue[]) =>
+    list.length
+      ? [
+          <li key={`g-${label}`} className="ocl-due__group">
+            {label}
+          </li>,
+          ...list.map(row),
+        ]
+      : [];
+
+  const dated = venues
+    .filter((v) => dateOf(v, mode))
+    .sort((a, b) => dateOf(a, mode)!.localeCompare(dateOf(b, mode)!));
+  const undated = venues.filter((v) => !dateOf(v, mode));
+
+  // Looking back, a past event stays where it fell; only deadlines close.
+  if (mode === "events") {
+    return (
+      <ol className="ocl-due-list">
+        {dated.map(row)}
+        {group("No date", undated)}
+      </ol>
+    );
+  }
+
+  const closed = today ? dated.filter((v) => (daysLeft(v, mode, today) ?? 0) < 0) : [];
   const ahead = dated.filter((v) => !closed.includes(v));
-  const open = venues.filter((v) => !v.deadline);
 
   const rows: ReactNode[] = [];
   let year = "";
@@ -205,31 +248,13 @@ function Timeline({ venues }: { venues: Venue[] }): ReactNode {
         </li>,
       );
     }
-    rows.push(
-      <li key={v.id}>
-        <VenueRow venue={v} today={today} />
-      </li>,
-    );
+    rows.push(row(v));
   }
-
-  const group = (label: string, list: Venue[]) =>
-    list.length
-      ? [
-          <li key={`g-${label}`} className="ocl-due__group">
-            {label}
-          </li>,
-          ...list.map((v) => (
-            <li key={v.id}>
-              <VenueRow venue={v} today={today} />
-            </li>
-          )),
-        ]
-      : [];
 
   return (
     <ol className="ocl-due-list">
       {rows}
-      {group("No fixed date", open)}
+      {group("No fixed date", undated)}
       {group("Closed", closed)}
     </ol>
   );
@@ -240,7 +265,7 @@ export default function Venues({
   view = "cards",
 }: {
   year?: number;
-  view?: "cards" | "timeline";
+  view?: "cards" | "timeline" | "lookback";
 }): ReactNode {
   const all = (usePluginData("ocl-lab-data") as LabData).venues;
   const [kind, setKind] = useState<Venue["kind"] | "all">("all");
@@ -257,22 +282,24 @@ export default function Venues({
 
   return (
     <div className="ocl-venues">
-      <div className="ocl-filter__areas" role="group" aria-label="Kind of venue">
-        {kinds.map((k) => (
-          <button
-            key={k.key}
-            type="button"
-            className="ocl-filter__chip"
-            aria-pressed={kind === k.key}
-            onClick={() => setKind(k.key)}
-          >
-            {k.label} <span className="ocl-filter__count">{count(k.key)}</span>
-          </button>
-        ))}
-      </div>
+      {view === "lookback" ? null : (
+        <div className="ocl-filter__areas" role="group" aria-label="Kind of venue">
+          {kinds.map((k) => (
+            <button
+              key={k.key}
+              type="button"
+              className="ocl-filter__chip"
+              aria-pressed={kind === k.key}
+              onClick={() => setKind(k.key)}
+            >
+              {k.label} <span className="ocl-filter__count">{count(k.key)}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
-      {view === "timeline" ? (
-        <Timeline venues={shown} />
+      {view !== "cards" ? (
+        <Timeline venues={shown} mode={view === "lookback" ? "events" : "deadlines"} />
       ) : (
         <div className="ocl-venues__list">
           {shown.map((venue) => (

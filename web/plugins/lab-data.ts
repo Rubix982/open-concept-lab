@@ -242,6 +242,8 @@ export type Venue = {
   year: number;
   /** ISO date of the next submission deadline, for sorting. Absent for rolling journals. */
   deadline?: string;
+  /** ISO date the event itself took place, for a look-back in date order. */
+  held?: string;
   /** The deadline as a reader should see it, including "estimated" when it is. */
   due?: string;
   /** Where a competition is run and scored: Kaggle, Codabench, a Hugging Face Space. */

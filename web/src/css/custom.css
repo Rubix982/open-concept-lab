@@ -2313,6 +2313,11 @@ a.ocl-desk__day:focus-visible {
   color: var(--ocl-ink-faint);
 }
 
+.ocl-due__flag {
+  margin-left: 0.55rem;
+  font-size: 0.7rem;
+}
+
 .ocl-due__text {
   margin-top: 0.1rem;
   font-family: var(--ocl-apparatus);
@@ -2358,6 +2363,39 @@ a.ocl-desk__day:focus-visible {
   margin: 0.6rem 0 0;
   font-family: var(--ocl-apparatus);
   font-size: 0.76rem;
+}
+
+/* The gaps table, read against the work. On a phone three columns leave the
+   verdict a few words wide, so each row stacks: what was asked, who asked, and
+   the verdict under them. */
+@media (max-width: 560px) {
+  .markdown .ocl-gaps table,
+  .markdown .ocl-gaps tbody,
+  .markdown .ocl-gaps tr,
+  .markdown .ocl-gaps td {
+    display: block;
+    width: 100%;
+  }
+
+  .markdown .ocl-gaps thead {
+    display: none;
+  }
+
+  .markdown .ocl-gaps tr {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--ocl-rule);
+  }
+
+  .markdown .ocl-gaps td {
+    padding: 0;
+    border: 0;
+  }
+
+  .markdown .ocl-gaps td:nth-child(2) {
+    margin: 0.15rem 0 0.35rem;
+    font-size: 0.82rem;
+    color: var(--ocl-ink-faint);
+  }
 }
 
 @media (max-width: 560px) {

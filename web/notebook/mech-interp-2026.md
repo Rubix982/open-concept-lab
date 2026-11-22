@@ -43,34 +43,35 @@ Conferences, journals, workshops and competitions, soonest deadline first, with 
 
 ## Where it gets judged
 
-Two things worth keeping in view before the cards: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
+Looking back at 2026: this field has **no competition culture to speak of** — one competition ran, against five workshops — and most of its venues are **non-archival**, so unfinished work is welcome and a submission does not spend the result.
+
+<Venues view="lookback" />
 
 <Notice>
-  <strong>Every card carries its own source, and unverified cards say so.</strong>
+  <strong>Every entry carries its own source, and unverified ones say so.</strong>
   A description read off a search result is not a verified fact even when the
-  name is right — that is a mistake this project has made twice and corrected in
-  writing. A card marked <em>unchecked</em> must not be cited or planned around
-  until somebody has opened the primary page. One of the seven is unchecked: a
-  funding programme that exists only on grant aggregators.
+  name is right; this project has made that mistake twice. One of the seven is
+  unchecked, a funding programme that exists only on grant aggregators, and it
+  must not be cited or planned around until somebody has opened the primary page.
 </Notice>
 
-<Venues />
-
-NeurIPS 2026 runs across three sites — Sydney from 6 December, with Atlanta and Paris from 9 December — so its two interpretability workshops and its interpretability competition are on three different continents. The [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls its list preliminary and warns against the informal lists circulating elsewhere, which is worth repeating here: this page is one of those lists.
+NeurIPS 2026 runs across three sites, Sydney from 6 December and Atlanta and Paris from 9 December, so its two interpretability workshops and its competition are on three continents. Its [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls the list preliminary and warns against informal lists, and this page is one of those.
 
 ## What these venues asked for that nothing here answers
 
-The cards above are only useful read against the work, so: five of the six venues name something this notebook has no evidence for.
+Read against the work, five of the six venues name something this notebook has no evidence for.
 
-**Features and circuits.** NEMI's topic list opens with neural circuits and feature attribution. Nothing here decomposes a representation into features; the work measures what a weight edit reaches, which is a different object. This is the largest gap and the most expensive to close, and it is not the next thing.
+<div className="ocl-gaps">
 
-**Reasoning that is robust against reasoning that is spurious.** The AIMO challenge's whole task. Nothing here touches reasoning at all.
+| Asked for | Asked by | Here |
+| --- | --- | --- |
+| **Features and circuits** | NEMI, first on its topic list | **Nothing.** The work measures what a weight edit reaches, which is a different object. The largest gap and the most expensive to close, and not the next thing. |
+| **Reasoning that is robust, against reasoning that is spurious** | AIMO Interpretability Challenge, its whole task | **Nothing.** Nothing here touches reasoning. |
+| **Interpretability for discovery**: finding something out about the world, not the model | Interpretability for Discovery, NeurIPS | **Nothing.** |
+| **Reproducing someone else's result** | BlackboxNLP's reproducibility track | **Not yet, and the work is shaped for it.** It is built around controls, null distributions, digest-checked records and claims withdrawn in public. |
+| **Probes** | NEMI, and two industry postings read on 10 November 2026 | **Partly, under another name.** edit-forensics ([built](/built)) finds a planted fact in a suspect checkpoint: the layer from a weight diff, the subject from how hard the update fires on its name, and with no base model, from outsized MLP writes. That is a monitor, and it has never been called one. |
 
-**Interpretability for discovery** — using model internals to find something out about the world rather than about the model. Nothing.
-
-**Reproducing someone else's interpretability result.** BlackboxNLP runs a track for exactly this, and it is the one gap on this list that the existing work is already shaped for: the discipline here is built around controls, null distributions, digest-checked records and claims withdrawn in public. That track rewards the thing this project has been practising on itself.
-
-**Probes.** Named by NEMI, and named twice in industry postings read on 10 November 2026. Partly answered, under another name: edit-forensics (the report is on [built](/built)) detects a planted fact in a suspect checkpoint — the edited layer from a weight diff, the subject by scoring names on how hard the update fires, and, with no base model at all, the subject from outsized MLP writes. That is a monitor. It has never been called one.
+</div>
 
 ## What this page is for
 
