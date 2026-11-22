@@ -174,10 +174,19 @@ const config: Config = {
         { to: "/reading", label: "Reading", position: "left" },
         { to: "/agentic", label: "Agentic", position: "left" },
         { to: "/graphics", label: "Graphics", position: "left" },
-        { to: "/shipped", label: "Shipped", position: "left" },
-        { to: "/built", label: "Built", position: "left" },
-        { to: "/unfinished", label: "Unfinished", position: "left" },
-        { to: "/someday", label: "Someday", position: "left" },
+        // The four stages of a thing I make, in order: out in use, built,
+        // stopped partway, not started. One menu, so the bar keeps its room.
+        {
+          type: "dropdown",
+          label: "Making",
+          position: "left",
+          items: [
+            { to: "/shipped", label: "Shipped" },
+            { to: "/built", label: "Built" },
+            { to: "/unfinished", label: "Unfinished" },
+            { to: "/someday", label: "Someday" },
+          ],
+        },
         { type: "search", position: "right" },
         { to: "/about", label: "About", position: "right" },
         // Icon-only on a wide screen; the label still shows in the mobile menu.

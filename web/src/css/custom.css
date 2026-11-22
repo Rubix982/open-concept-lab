@@ -352,7 +352,9 @@ body::after {
 }
 
 .navbar__link--active,
-.navbar__link--active:hover {
+.navbar__link--active:hover,
+/* a menu whose page is open is the current tab too; Docusaurus marks only the item inside */
+.navbar__item.dropdown:has(.dropdown__link--active) > .navbar__link {
   color: var(--ocl-ink);
   box-shadow: inset 0 -2px 0 var(--ocl-oxide);
 }
@@ -9412,10 +9414,11 @@ a:hover > .ocl-home__featureCover {
 
 /* Navbar with eight sections (2026-10-25): below 1240px the search shrinks to
    its icon and opens when clicked, and the links sit a little closer, so the
-   last section never runs under the search box. Ten sections since
-   2026-11-22, so the same happens below 1400px. */
+   last section never runs under the search box. Raised to 1400px on
+   2026-11-22: between the two the full search box squeezed the site's name
+   down to "Open Conce…". */
 @media (min-width: 997px) and (max-width: 1400px) {
-  .navbar__items:not(.navbar__items--right) .navbar__link {
+  .navbar__items--left .navbar__link {
     padding-inline: 0.45rem;
   }
 
@@ -9455,7 +9458,7 @@ a:hover > .ocl-home__featureCover {
     padding-inline: 0.75rem;
   }
 
-  .navbar__items:not(.navbar__items--right) .navbar__link {
+  .navbar__items--left .navbar__link {
     padding-inline: 0.38rem;
   }
 }
