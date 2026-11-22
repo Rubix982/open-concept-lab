@@ -174,17 +174,18 @@ const config: Config = {
         { to: "/reading", label: "Reading", position: "left" },
         { to: "/agentic", label: "Agentic", position: "left" },
         { to: "/graphics", label: "Graphics", position: "left" },
-        // The four stages of a thing I make, in order: out in use, built,
-        // stopped partway, not started. One menu, so the bar keeps its room.
+        // The four stages of a thing I make, as one path from an idea to a
+        // tool in use (src/components/MakingMenu.tsx). One menu, so the bar
+        // keeps its room; on a phone it is the theme's plain list.
         {
-          type: "dropdown",
+          type: "custom-making",
           label: "Making",
           position: "left",
           items: [
-            { to: "/shipped", label: "Shipped" },
-            { to: "/built", label: "Built" },
-            { to: "/unfinished", label: "Unfinished" },
             { to: "/someday", label: "Someday" },
+            { to: "/unfinished", label: "Unfinished" },
+            { to: "/built", label: "Built" },
+            { to: "/shipped", label: "Shipped" },
           ],
         },
         { type: "search", position: "right" },
