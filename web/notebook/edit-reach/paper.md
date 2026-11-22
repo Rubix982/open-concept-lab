@@ -170,6 +170,10 @@ The same paper states that on a *compact* domain it is Lipschitz. It declines th
 
 So the honest position is that **no usable constant exists**, not that no constant exists. This paper got that distinction wrong once, before its theory sections were read.
 
+<Lead>Evaluation in this field is inflated in more than one way, and only one of them is ours.</Lead> <Cite id="yang2025mirage" narrative /> finds the inflation in the **protocol**: teacher forcing at test time leaks both the content and the length of the ground truth, and editing success falls from **96.8%** to **38.5%** once it is removed. §5.5 finds it in the **items**, where a question built to test propagation names the subject it was supposed to reach around.
+
+The two are independent. One is about how any item is scored, the other about which items were written, and a benchmark can suffer both at once. Neither this paper's numbers nor that one's are affected by the other, because the quantity here is a fraction of an update arriving at a token rather than a generated answer scored against a reference.
+
 <Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume it without writing it down.
 
 The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full. That is enough to ask the question and not enough to answer it.
@@ -245,6 +249,8 @@ Under causal attention, a prompt opening with the edited subject has, at that su
 It held exactly. On GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B, each read at four fractions of its own depth, the median coefficient over 42 prefix-sharing probes was **1.000** at every one of the twelve readings, with a worst deviation of **0.000e+00** — not a rounded zero, the same float. Served through NDIF <Cite id="fiottokaufman2025nnsight" />.<Prov id="E-040" />
 
 <Lead>The floor does not travel the way the pinned value does.</Lead> It is a prompt naming a different person, and it moves everywhere the pinned value stays put. Over those same twelve readings it runs from **0.031 to 0.388**, a factor of twelve, and it is not ordered by model size or by depth: at 16% of depth the largest model returns the highest floor of the three, and at 30% the middle one does. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.<Prov id="E-040" />
+
+<Lead>The structure the premise rests on is not a transformer artifact.</Lead> <Cite id="sharma2024locating" narrative /> runs causal tracing in Mamba, a state space model rather than a transformer, and finds the strong causal effect at the last token of the subject in middle layers, with rank-one edits inserting facts there — the same place and the same shape. That is the best outside support the prefix-sharing premise has, and it is support for the premise rather than for anything measured here.
 
 So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 6 is about.
 
@@ -767,6 +773,10 @@ That is a property of what the model learned. This is a property of what the ben
 
 <Lead>The fault is diagnosable rather than universal.</Lead> MQuAKE names the edited subject when, and only when, the edit sits on the chain's first hop. So a clean subset already exists inside the field's own data — by construction, not by anyone's design — and this is the kind of thing the screen is for.
 
+<Lead>The same split has been reached from the other end.</Lead> <Cite id="shi2026write" narrative /> divides multi-hop items by **which hop was edited**: when the edited hop is the last one the answer is the newly written object itself, and only when an unedited hop follows is that object merely a bridge the model has to read. That is this section's observation approached from the opposite side, by authors editing with fine-tuning rather than a rank-one update, and it is the reason to think the observation is a property of these benchmarks rather than of this project's reading of them.
+
+It also gives the screen something to do. That paper reports lifting the two-hop curse **on RippleEdits**, and RippleEdits is where the contaminated test type is. Which of its items could have tested propagation is a question the coefficient answers before any edit is applied — and this paper does not run that check, so it is an offer rather than a result.
+
 <Data caption={<>Direct exposure of the edited subject in two multi-hop benchmarks, counted over the released sets.</>}>
   <thead>
     <tr><th>Benchmark</th><th>Item class</th><th className="n">names subject</th><th className="n">median c</th><th className="n">floor</th></tr>
@@ -988,7 +998,7 @@ The table below is every claim this paper has made, numbered in the order they w
 
 Every qualification in this paper is collected here, so the body above runs unhedged.
 
-1. <Lead>Delivery is not effect.</Lead> Every number here says how much of the edit vector arrives at a token. None says how far the model's answer moved. At a fixed coefficient, measured movement spans a factor of 2.96.
+1. <Lead>Delivery is not effect.</Lead> Every number here says how much of the edit vector arrives at a token. None says how far the model's answer moved. At a fixed coefficient, measured movement spans a factor of 2.96. And the gap does not close one step further along: <Cite id="rosati2024long" narrative /> scores editing in long-form generation and finds those measures have very little relationship with the short-form ones they were built to extend, so short-form effect does not give long-form behaviour either.
 2. <Lead>The coefficient belongs to a token, not a prompt.</Lead> Within one prompt the subject position and the final position differ by a factor of 35, and the answer is produced at the final position.
 3. <Lead>Three models, two architectures, one layer, two-hop chains.</Lead> The near and far field were read on Llama-3.1-8B, Llama-3.1-70B and GPT-J-6B, all at layer 5. A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit. The depth sweep in §3.2 moves the *floor* across four depths on three models; it does not move the far-field excess, which stays at one layer.
 4. <Lead>The GPT-J reading is consistent with §5.2 and is weak evidence for it.</Lead> Its far-field own and floor are 0.1303 and 0.1280 and 52% of questions sit above the floor, so there was almost no dynamic range available to find missing. The claim rests on the two models where a majority did sit above the floor. Every near-field figure in §5 is a Llama number: 0.9334 and 0.9350 against 0.7985 on GPT-J.
@@ -1000,7 +1010,9 @@ Every qualification in this paper is collected here, so the body above runs unhe
 
 10. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its predictors are proxies. Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text, and headroom measures the base model's confidence on the fact being edited, not the exposure behind it. The two are of different kinds — one external to the model, one internal — and both are null, which is stronger than either alone and is still not a measurement of textual frequency.
 11. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
-12. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+12. <Lead>Which ROME implementation wrote these edits is not recorded.</Lead> The 42 edits were read from a cache and the page names no implementation. <Cite id="gupta2024rebuilding" narrative /> shows that ROME's *disabling edits* — which collapse a model outright — are an artifact of irregularities in the original implementation rather than of the algorithm, and that a corrected one removes them. So the provenance of these edits is a question this paper cannot answer, and the per-run directories that would have answered it are gone (Appendix B). The anchor gate in §3.2 returning exactly 1.000 is evidence the pipeline read them correctly, not evidence that the edits themselves are well formed.
+
+13. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 

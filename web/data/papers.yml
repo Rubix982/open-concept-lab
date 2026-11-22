@@ -912,13 +912,13 @@ marks2024sparse:
   year: 2024
   venue: "International Conference on Learning Representations"
   url: https://arxiv.org/abs/2403.19647
-  status: to-read
-  relevance: medium
+  status: skimmed
+  relevance: low
   field: "Evaluating edits"
   area: "Predicting an edit's reach"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the pre-edit screen screen on anticipat in [T-014]; cited 528 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read at the abstract and by searching its body. A false positive of the [T-014] screen: it matched on \"anticipat\", which occurs only in its reference list. Sparse feature circuits are about discovering causal subgraphs, not about predicting an edit's reach. Kept as a record of what the screen costs in precision."
 
 tewel2023locked:
   title: "Key-Locked Rank One Editing for Text-to-Image Personalization"
@@ -926,13 +926,13 @@ tewel2023locked:
   year: 2023
   venue: "International Conference on Computer Graphics and Interactive Techniques"
   url: https://arxiv.org/abs/2305.01644
-  status: to-read
-  relevance: medium
+  status: skimmed
+  relevance: low
   field: "Knowledge editing"
   area: "Rank-one edits and their structure"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the rank-one structure screen on rank one in [T-014]; cited 253 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read at the abstract. Rank-one editing carried into text-to-image personalisation, where the key is locked to a superordinate category. Same algebra, a different medium, no language-model evaluation \u2014 filed so a later sweep does not surface it again as unexamined."
 
 gupta2024rebuilding:
   title: "Rebuilding ROME : Resolving Model Collapse during Sequential Model Editing"
@@ -940,13 +940,13 @@ gupta2024rebuilding:
   year: 2024
   venue: "Conference on Empirical Methods in Natural Language Processing"
   url: https://arxiv.org/abs/2403.07175
-  status: to-read
-  relevance: medium
+  status: read
+  relevance: high
   field: "Knowledge editing"
   area: "Rank-one edits and their structure"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 68 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read from its method sections. ROME's \"disabling edits\", which collapse a model outright, are an artifact of irregularities in the original implementation rather than of the algorithm; r-ROME removes them. This paper's 42 edits were read from a cache and the page never records which ROME implementation wrote them, so this is the paper that makes that omission matter."
 
 das2024larimar:
   title: "Larimar: Large Language Models with Episodic Memory Control"
@@ -954,13 +954,13 @@ das2024larimar:
   year: 2024
   venue: "International Conference on Machine Learning"
   url: https://arxiv.org/abs/2403.11901
-  status: to-read
-  relevance: medium
+  status: skimmed
+  relevance: low
   field: "Evaluating edits"
   area: "Ripple effects and multi-hop"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 64 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read at the abstract. An external episodic memory for fast updates rather than a weight edit, so it sits outside what this project measures. Filed as examined."
 
 sharma2024locating:
   title: "Locating and Editing Factual Associations in Mamba"
@@ -968,13 +968,13 @@ sharma2024locating:
   year: 2024
   venue: "arXiv.org"
   url: https://arxiv.org/abs/2404.03646
-  status: to-read
-  relevance: medium
+  status: read
+  relevance: high
   field: "Knowledge editing"
   area: "Rank-one edits and their structure"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 54 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read from its method sections. Causal tracing in Mamba puts the strong causal effect at the last token of the subject in middle layers, and rank-one edits insert facts there, matching the transformer findings. So the subject's-last-token structure the near field depends on is not a transformer artifact \u2014 which is the best outside support \u00a73.2's premise has."
 
 dherin2025learning:
   title: "Learning without training: The implicit dynamics of in-context learning"
@@ -1024,13 +1024,13 @@ rosati2024long:
   year: 2024
   venue: "North American Chapter of the Association for Computational Linguistics"
   url: https://arxiv.org/abs/2402.09394
-  status: to-read
-  relevance: medium
+  status: read
+  relevance: high
   field: "Evaluating edits"
   area: "Ripple effects and multi-hop"
-  verified: false
+  verified: true
   projects: [edit-slice, rome-neighbors]
-  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 30 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+  gives_me: "Read from its method sections. LEME scores editing in long-form generation and finds its measures have very little relationship with the short-form ones they were designed to extend. A third gap in the same family as \u00a77's first limitation: delivery does not give effect, and short-form effect does not give long-form behaviour either."
 
 hua2024propagation:
   title: "Propagation and Pitfalls: Reasoning-based Assessment of Knowledge Editing through Counterfactual Tasks"
