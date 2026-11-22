@@ -1,4 +1,0 @@
-2026-11-15 18:49:51,414 INFO     E-040  run E-040 -> logs/E-040-2026-11-15-184951.log
-2026-11-15 18:49:51,753 INFO     E-040  42 anchors, 42 floors, 1 models, layer 5
-2026-11-15 18:49:58,224 ERROR    E-040    meta-llama/Llama-3.1-405B    SKIPPED: RemoteError: Could not deploy this model. CANT_ACCOMMODATE: placed 0 of 1 new replicas before the cluster ran out of room.
-2026-11-15 18:49:58,225 ERROR    E-040  no model was read; nothing to say about the premise

@@ -1,3 +1,0 @@
-# glossary
-
-_(empty)_

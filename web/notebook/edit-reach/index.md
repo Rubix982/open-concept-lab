@@ -130,9 +130,9 @@ Four questions are open. Four more were answered by the work above and are kept 
 | | |
 | --- | --- |
 | [The paper](./paper) | Eight sections and three appendices: the method, the control, five results, the findings ledger with every claim this project withdrew, and the provenance of every number. |
-| [`editreach` 0.1.0](https://github.com/Rubix982/open-concept-lab/tree/main/ai/edit-reach) | Ten modules, about 1,900 lines. The coefficient is an object rather than an expression, and a reading without a control does not type-check. |
-| [NDIF reproducibility reference](https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/docs/ndif-reproducibility.md) | What reproduces off a shared inference fabric and what does not, with the conformance suite that found four errors in it. |
-| [The record](https://github.com/Rubix982/open-concept-lab/tree/main/ai/edit-reach/agents) | Fifteen decisions, fourteen engineer tickets, the card ledger and the thread tree. Every number on the paper traces to a run here. |
+| [`editreach` 0.1.0](https://github.com/Rubix982/edit-reach) | Ten modules, about 1,900 lines. The coefficient is an object rather than an expression, and a reading without a control does not type-check. |
+| [NDIF reproducibility reference](https://github.com/Rubix982/edit-reach/blob/main/docs/ndif-reproducibility.md) | What reproduces off a shared inference fabric and what does not, with the conformance suite that found four errors in it. |
+| [The record](https://github.com/Rubix982/edit-reach/tree/main/agents) | Fifteen decisions, fourteen engineer tickets, the card ledger and the thread tree. Every number on the paper traces to a run here. |
 
 ## Where it stands
 

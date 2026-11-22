@@ -13,3 +13,6 @@
 [submodule "projects/patternbook"]
 	path = projects/patternbook
 	url = https://github.com/Rubix982/patternbook.git
+[submodule "ai/edit-reach"]
+	path = ai/edit-reach
+	url = https://github.com/Rubix982/edit-reach.git

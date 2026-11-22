@@ -345,7 +345,7 @@ export function Run({
   // more than a link that 404s, and more than a filename a reader cannot tell
   // is unreachable.
   const base =
-    "https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/results/";
+    "https://github.com/Rubix982/edit-reach/blob/main/results/";
   // Space-separated, because a run that swept three models wrote three files
   // and naming one of them would be a quieter kind of wrong than naming none.
   const files = out.split(" ").filter((o) => o.endsWith(".json"));

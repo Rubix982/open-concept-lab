@@ -1,3 +1,0 @@
-2026-11-15 16:07:36,238 INFO     E-040  run E-040 -> logs/E-040-2026-11-15-160736.log
-2026-11-15 16:07:36,506 INFO     E-040  42 anchors, 42 floors, 0 models, layer 5
-2026-11-15 16:07:36,506 ERROR    E-040  no model was read; nothing to say about the premise

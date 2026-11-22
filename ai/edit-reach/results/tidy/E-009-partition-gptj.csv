@@ -1,2 +1,0 @@
-ticket,model,arch,n_layers,d_mlp,layer,depth_fraction,group,item_id,metric,value
-E-009-partition-gptj,EleutherAI/gpt-j-6b,gptj,28,16384,5,0.1786,summary,(scalar),layer,5.0

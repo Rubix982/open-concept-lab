@@ -1,5 +1,0 @@
-2026-11-15 16:07:56,533 INFO     E-040  run E-040 -> logs/E-040-2026-11-15-160756.log
-2026-11-15 16:07:56,794 INFO     E-040  42 anchors, 42 floors, 4 models, layer 5
-2026-11-15 16:08:09,435 INFO     E-040    EleutherAI/gpt-j-6b          gptj   L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.193888  sep 0.806
-2026-11-15 16:08:18,132 INFO     E-040    meta-llama/Llama-3.1-8B      llama  L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.080881  sep 0.919
-2026-11-15 16:08:35,247 INFO     E-040    meta-llama/Llama-3.1-70B     llama  L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.030862  sep 0.969

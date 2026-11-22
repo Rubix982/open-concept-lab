@@ -377,7 +377,7 @@ Each value came from one device and each device returned one value, and the conn
   caption={<>Six checks down, the sampled layers across, one panel per model. Three of them are analytic and read <b>exactly zero</b> everywhere — drawn empty with a dot rather than as the palest shade, because matching exactly is a different statement from being small. The rest span <b>1.9e-09</b> to <b>2.7e-01</b>. Depth has no direction that holds across models: on Llama-3.1-8B the matmul-site disagreement rises from 8.4e-07 to 3.7e-05, on GPT-J-6B it sits near 1e-08 throughout, and on the 70B it moves both ways. Drawn from the runs by <code>tools/figure_heatmap.py</code>.</>}
   wide
   plain
-/> The full reference, with the conformance suite that found four errors in it, is [in the repository](https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/docs/ndif-reproducibility.md).
+/> The full reference, with the conformance suite that found four errors in it, is [in the repository](https://github.com/Rubix982/edit-reach/blob/main/docs/ndif-reproducibility.md).
 
 ### 4.2 Four in five committed log files held nothing, and a single import was the cause
 
