@@ -2245,6 +2245,9 @@ a.ocl-desk__day:focus-visible {
 .ocl-due__row {
   display: grid;
   grid-template-columns: 5.4rem 1fr auto;
+  grid-template-areas:
+    "date what kind"
+    ".    extra .";
   align-items: baseline;
   gap: 0.2rem 0.9rem;
   padding: 0.6rem 0.4rem 0.6rem 0;
@@ -2398,6 +2401,156 @@ a.ocl-desk__day:focus-visible {
   }
 }
 
+.ocl-due__date {
+  grid-area: date;
+}
+
+.ocl-due__what {
+  grid-area: what;
+}
+
+.ocl-due__extra {
+  grid-area: extra;
+  min-width: 0;
+}
+
+.ocl-due__kind {
+  grid-area: kind;
+}
+
+/* On a narrow screen the deadline strip has no room, and the dates say it. */
+.ocl-due--deadlines .ocl-due__extra,
+.ocl-due__axis {
+  display: none;
+}
+
+.ocl-due__asks {
+  margin-top: 0.2rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+/*
+ * Wide: four columns, and every row's columns are fixed but the strip's, so the
+ * strips line up into one chart. The strip runs into the row's padding, so its
+ * month lines and the today line read as continuous down the list.
+ */
+@media (min-width: 997px) {
+  .ocl-due__row,
+  .markdown .ocl-due__axis {
+    grid-template-columns: 5.4rem clamp(12rem, 22vw, 17rem) minmax(0, 1fr) 6.2rem;
+    grid-template-areas: "date what extra kind";
+    column-gap: 1.2rem;
+  }
+
+  .ocl-due--deadlines .ocl-due__extra {
+    display: block;
+    align-self: stretch;
+    margin: -0.6rem 0;
+  }
+
+  .ocl-due__asks {
+    margin-top: 0;
+    font-size: 0.88rem;
+  }
+
+  .ocl-due__kind {
+    justify-content: flex-end;
+  }
+
+  .ocl-due__group--year {
+    display: none;
+  }
+
+  .markdown .ocl-due__axis {
+    display: grid;
+    padding-right: 0.4rem;
+  }
+
+  .ocl-due__body {
+    margin-left: 6.6rem;
+    max-width: 48rem;
+  }
+}
+
+.ocl-due__strip {
+  position: relative;
+  display: block;
+  height: 100%;
+  min-height: 3.2rem;
+  background-image: linear-gradient(to right, var(--ocl-rule) 1px, transparent 1px);
+  background-size: calc(100% / var(--ocl-months)) 100%;
+  background-repeat: repeat-x;
+  border-right: 1px solid var(--ocl-rule);
+}
+
+.ocl-due__dot {
+  position: absolute;
+  top: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--ocl-ink);
+  box-shadow: 0 0 0 2px var(--ocl-paper);
+  transform: translate(-50%, -50%);
+}
+
+.ocl-due--soon .ocl-due__dot {
+  background: var(--ocl-oxide);
+}
+
+.ocl-due__band {
+  position: absolute;
+  top: 50%;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-ink-faint) 38%, transparent);
+  transform: translateY(-50%);
+}
+
+.ocl-due__today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1.5px solid var(--ocl-link);
+  opacity: 0.75;
+}
+
+.ocl-due__months {
+  position: relative;
+  display: block;
+  height: 2rem;
+  border-right: 1px solid var(--ocl-rule);
+  background-image: linear-gradient(to right, var(--ocl-rule) 1px, transparent 1px);
+  background-size: calc(100% / var(--ocl-months)) 100%;
+  background-repeat: repeat-x;
+}
+
+.ocl-due__months > span {
+  position: absolute;
+  bottom: 0.35rem;
+  padding-left: 0.3rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-due__months > .ocl-due__todaylabel,
+.ocl-due__months > .ocl-due__year {
+  top: 0.05rem;
+  bottom: auto;
+}
+
+.ocl-due__months > .ocl-due__todaylabel {
+  padding: 0;
+  color: var(--ocl-link);
+  transform: translateX(-50%);
+}
+
 @media (max-width: 560px) {
   .ocl-due__row {
     grid-template-columns: 4.4rem 1fr auto;
@@ -2440,6 +2593,69 @@ a.ocl-desk__day:focus-visible {
 
 .markdown:has(> .ocl-garden) > *:not(.ocl-garden) {
   max-width: var(--ocl-measure);
+}
+
+/*
+ * A page whose lists are marked wide (the mech interp overview) gives its
+ * contents column to them: the deadline strip needs the width, and a row that
+ * can hold what a venue asks for beside its name does not need opening. Prose
+ * keeps the measure, and the art keeps its place beside the title.
+ */
+@media (min-width: 997px) {
+  [class*="docItemCol"]:has(.ocl-wide) {
+    max-width: none !important;
+  }
+
+  [class*="docMainContainer"]:has(.ocl-wide) > .container {
+    max-width: 80rem;
+  }
+}
+
+.markdown:has(> .ocl-wide) {
+  max-width: none;
+}
+
+.markdown:has(> .ocl-wide) > *:not(.ocl-wide):not(.ocl-art) {
+  max-width: var(--ocl-measure);
+}
+
+/* Section headings carry the rule that divides the page, and the sections are
+   as wide as their lists. */
+.markdown:has(> .ocl-wide) > h2 {
+  max-width: none;
+}
+
+.markdown > .ocl-wide {
+  clear: both;
+}
+
+/* Two things that sit side by side when there is room: a notice and the notes
+   that go with it. */
+.markdown > .ocl-pair {
+  display: grid;
+  gap: 0 2.5rem;
+  margin: 1.6rem 0;
+}
+
+.ocl-pair > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 997px) {
+  .markdown > .ocl-pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 561px) {
+  .markdown .ocl-gaps th:nth-child(1) {
+    width: 24%;
+  }
+
+  .markdown .ocl-gaps th:nth-child(2) {
+    width: 22%;
+  }
 }
 
 /* The pages under a project, below its card. Outside the card's own link,

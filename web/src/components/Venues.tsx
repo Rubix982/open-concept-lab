@@ -156,12 +156,118 @@ function leftLabel(n: number, estimated: boolean, mode: Mode): string {
   return estimated ? `~${s}` : s;
 }
 
-function VenueRow({ venue, today, mode }: { venue: Venue; today: Date | null; mode: Mode }): ReactNode {
+/**
+ * The months a deadline list spans, from the first deadline's month to the
+ * last one's. Read off every venue of the edition, not the filtered few, so the
+ * strip does not rescale when a filter is pressed.
+ */
+type Axis = { y: number; m: number; months: number };
+
+function axisFor(venues: Venue[], today: Date | null): Axis | null {
+  const days = venues.map((v) => v.deadline).filter((d): d is string => Boolean(d)).sort();
+  if (!days.length) return null;
+  // Reach back to this month when it comes first, so "today" is on the strip.
+  const firstDay = parseDay(days[0]);
+  const first = today && today < firstDay ? new Date(today.getFullYear(), today.getMonth(), 1) : firstDay;
+  const last = parseDay(days[days.length - 1]);
+  const months = (last.getFullYear() - first.getFullYear()) * 12 + last.getMonth() - first.getMonth() + 1;
+  return { y: first.getFullYear(), m: first.getMonth(), months };
+}
+
+/** Position on the strip as a percentage. Every month gets the same width. */
+function along(d: Date, axis: Axis): number {
+  const index = (d.getFullYear() - axis.y) * 12 + d.getMonth() - axis.m;
+  const inMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  return ((index + (d.getDate() - 1) / inMonth) / axis.months) * 100;
+}
+
+const stripStyle = (axis: Axis) => ({ ["--ocl-months" as string]: axis.months });
+
+/**
+ * A checked deadline is a dot on its day. An estimated one is a band across its
+ * month, because the month is all that is known.
+ */
+function Strip({ venue, axis, today }: { venue: Venue; axis: Axis; today: Date | null }): ReactNode {
+  const t = today ? along(today, axis) : null;
+  let mark: ReactNode = null;
+  if (venue.deadline) {
+    const d = parseDay(venue.deadline);
+    if (venue.verified) {
+      mark = <span className="ocl-due__dot" style={{ left: `${along(d, axis)}%` }} title={venue.due} />;
+    } else {
+      const start = along(new Date(d.getFullYear(), d.getMonth(), 1), axis);
+      mark = (
+        <span
+          className="ocl-due__band"
+          style={{ left: `${start}%`, width: `${100 / axis.months}%` }}
+          title={venue.due}
+        />
+      );
+    }
+  }
+  return (
+    <span className="ocl-due__strip" style={stripStyle(axis)} aria-hidden="true">
+      {t !== null && t >= 0 && t <= 100 ? <span className="ocl-due__today" style={{ left: `${t}%` }} /> : null}
+      {mark}
+    </span>
+  );
+}
+
+function AxisRow({ axis, today }: { axis: Axis; today: Date | null }): ReactNode {
+  const t = today ? along(today, axis) : null;
+  const onStrip = t !== null && t >= 0 && t <= 100;
+  const width = 100 / axis.months;
+  // Months on the lower line, three letters each so they fit a narrow strip.
+  // The upper line holds the year where one starts, and today. A year label
+  // that would sit under the today label is left out.
+  return (
+    <li className="ocl-due__axis" aria-hidden="true">
+      <span />
+      <span />
+      <span className="ocl-due__months" style={stripStyle(axis)}>
+        {Array.from({ length: axis.months }, (_, i) => {
+          const d = new Date(axis.y, axis.m + i, 1);
+          const left = i * width;
+          const year =
+            (i === 0 || d.getMonth() === 0) && !(onStrip && Math.abs(t! - left) < width * 1.2) ? (
+              <span key={`y${i}`} className="ocl-due__year" style={{ left: `${left}%` }}>
+                {d.getFullYear()}
+              </span>
+            ) : null;
+          return [
+            year,
+            <span key={i} style={{ left: `${left}%` }}>
+              {MONTHS[d.getMonth()]}
+            </span>,
+          ];
+        })}
+        {onStrip ? (
+          <span className="ocl-due__todaylabel" style={{ left: `${t}%` }}>
+            today
+          </span>
+        ) : null}
+      </span>
+      <span />
+    </li>
+  );
+}
+
+function VenueRow({
+  venue,
+  today,
+  mode,
+  axis,
+}: {
+  venue: Venue;
+  today: Date | null;
+  mode: Mode;
+  axis: Axis | null;
+}): ReactNode {
   const n = today ? daysLeft(venue, mode, today) : null;
   const soon = mode === "deadlines" && n !== null && n >= 0 && n <= 30 && venue.verified;
-  const second = mode === "events" ? venue.asks : venue.due;
+  const second = mode === "events" ? venue.where : venue.due;
   return (
-    <details className={`ocl-due${soon ? " ocl-due--soon" : ""}`} id={venue.id}>
+    <details className={`ocl-due ocl-due--${mode}${soon ? " ocl-due--soon" : ""}`} id={venue.id}>
       <summary className="ocl-due__row">
         <span className="ocl-due__date">
           <span className="ocl-due__day">{dateLabel(venue, mode)}</span>
@@ -177,6 +283,13 @@ function VenueRow({ venue, today, mode }: { venue: Venue; today: Date | null; mo
           </span>
           {second ? <span className="ocl-due__text">{second}</span> : null}
         </span>
+        {mode === "events" ? (
+          <span className="ocl-due__extra ocl-due__asks">{venue.asks}</span>
+        ) : axis ? (
+          <span className="ocl-due__extra">
+            <Strip venue={venue} axis={axis} today={today} />
+          </span>
+        ) : null}
         <span className="ocl-due__kind">{venue.kind}</span>
       </summary>
       <div className="ocl-due__body">
@@ -193,7 +306,15 @@ function VenueRow({ venue, today, mode }: { venue: Venue; today: Date | null; mo
   );
 }
 
-function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode {
+function Timeline({
+  venues,
+  mode,
+  axisOver,
+}: {
+  venues: Venue[];
+  mode: Mode;
+  axisOver: Venue[] | null;
+}): ReactNode {
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => {
     const now = new Date();
@@ -203,15 +324,16 @@ function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode 
     if (hash) document.getElementById(hash)?.setAttribute("open", "");
   }, []);
 
+  const axis = axisOver ? axisFor(axisOver, today) : null;
   const row = (v: Venue) => (
     <li key={v.id}>
-      <VenueRow venue={v} today={today} mode={mode} />
+      <VenueRow venue={v} today={today} mode={mode} axis={axis} />
     </li>
   );
-  const group = (label: string, list: Venue[]) =>
+  const group = (label: string, list: Venue[], className = "") =>
     list.length
       ? [
-          <li key={`g-${label}`} className="ocl-due__group">
+          <li key={`g-${label}`} className={`ocl-due__group ${className}`}>
             {label}
           </li>,
           ...list.map(row),
@@ -236,6 +358,8 @@ function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode 
   const closed = today ? dated.filter((v) => (daysLeft(v, mode, today) ?? 0) < 0) : [];
   const ahead = dated.filter((v) => !closed.includes(v));
 
+  // On a wide screen the strip's month labels carry the year, so the year
+  // headings are for the narrow layout only.
   const rows: ReactNode[] = [];
   let year = "";
   for (const v of ahead) {
@@ -243,7 +367,7 @@ function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode 
     if (y !== year) {
       year = y;
       rows.push(
-        <li key={`y${y}`} className="ocl-due__group">
+        <li key={`y${y}`} className="ocl-due__group ocl-due__group--year">
           {y}
         </li>,
       );
@@ -253,6 +377,7 @@ function Timeline({ venues, mode }: { venues: Venue[]; mode: Mode }): ReactNode 
 
   return (
     <ol className="ocl-due-list">
+      {axis ? <AxisRow axis={axis} today={today} /> : null}
       {rows}
       {group("No fixed date", undated)}
       {group("Closed", closed)}
@@ -281,7 +406,7 @@ export default function Venues({
   const kinds = KINDS.filter((k) => k.key === "all" || count(k.key) > 0);
 
   return (
-    <div className="ocl-venues">
+    <div className={`ocl-venues${view === "cards" ? "" : " ocl-wide"}`}>
       {view === "lookback" ? null : (
         <div className="ocl-filter__areas" role="group" aria-label="Kind of venue">
           {kinds.map((k) => (
@@ -299,7 +424,11 @@ export default function Venues({
       )}
 
       {view !== "cards" ? (
-        <Timeline venues={shown} mode={view === "lookback" ? "events" : "deadlines"} />
+        <Timeline
+          venues={shown}
+          mode={view === "lookback" ? "events" : "deadlines"}
+          axisOver={view === "timeline" ? venues : null}
+        />
       ) : (
         <div className="ocl-venues__list">
           {shown.map((venue) => (

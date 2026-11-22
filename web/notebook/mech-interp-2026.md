@@ -2,6 +2,7 @@
 title: Mech interp in 2026
 sidebar_label: The field in 2026
 sidebar_position: 4
+hide_table_of_contents: true
 description: Where work on model internals can be submitted in 2027, soonest deadline first, and looking back, where it was judged in 2026, what each venue asked for, and which of those asks this notebook has nothing on.
 ---
 
@@ -16,6 +17,8 @@ description: Where work on model internals can be submitted in 2027, soonest dea
 Conferences, journals, workshops and competitions, soonest deadline first, with the days left counted from today.
 
 <Venues year={2027} view="timeline" />
+
+<div className="ocl-wide ocl-pair">
 
 <Notice>
   <strong>Read on 15 November 2026, when most 2027 calls were not out.</strong>
@@ -41,11 +44,15 @@ Conferences, journals, workshops and competitions, soonest deadline first, with 
 
 </details>
 
+</div>
+
 ## Where it gets judged
 
 Looking back at 2026: this field has **no competition culture to speak of** — one competition ran, against five workshops — and most of its venues are **non-archival**, so unfinished work is welcome and a submission does not spend the result.
 
 <Venues view="lookback" />
+
+<div className="ocl-wide ocl-pair">
 
 <Notice>
   <strong>Every entry carries its own source, and unverified ones say so.</strong>
@@ -57,11 +64,13 @@ Looking back at 2026: this field has **no competition culture to speak of** — 
 
 NeurIPS 2026 runs across three sites, Sydney from 6 December and Atlanta and Paris from 9 December, so its two interpretability workshops and its competition are on three continents. Its [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls the list preliminary and warns against informal lists, and this page is one of those.
 
+</div>
+
 ## What these venues asked for that nothing here answers
 
 Read against the work, five of the six venues name something this notebook has no evidence for.
 
-<div className="ocl-gaps">
+<div className="ocl-wide ocl-gaps">
 
 | Asked for | Asked by | Here |
 | --- | --- | --- |
