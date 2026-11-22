@@ -1,0 +1,29 @@
+# Projects I started and never finished. The /unfinished tab reads this file.
+#
+# Hand-kept: the words are mine. Each entry:
+#   name      a slug, used as the card's anchor (/unfinished#triage)
+#   title     what it was called
+#   repo      owner/name on GitHub, optional; links the code and gives the commit strip
+#   stack     a short line of what it was built with, optional
+#   what      one line: what it was
+#   thought   what I thought it would be
+#   got       how far it got, optional
+#   stopped   why it stopped, when I know, optional
+#   carried   where the idea went later, optional: { to: <site path or URL>, label: <words> }
+#
+# The commit strip comes from data/unfinished-activity.json, which
+# `npm run unfinished` regenerates from each repo's history on GitHub. Run it
+# after adding an entry; an entry it has not seen yet shows no strip.
+
+unfinished:
+  - name: triage
+    title: Triage
+    repo: Rubix982/triage
+    stack: Rust, React, Electron, DuckDB
+    what: A desktop app for finding who knows what across a team's Jira, Slack and Google Docs.
+    thought: Something the market needed, for visibility. What a team knows is spread across tickets, threads and documents, and the question that matters is usually who to ask. I wanted people at the centre, mapped from the work they had already done together.
+    got: It began in May 2025 as a local tool for reading Jira issues. In August it grew into a Rust server with extractors for Jira, Google Docs and Slack, sign-in for the last two, a graph meant to join one person's accounts across all three, and an Electron app to look at it. One last commit in March 2026 replaced placeholder storage with real storage and added Bitbucket. The README calls it ready for production.
+    stopped: The need was real, and bigger tools were already meeting it, with the access to a company's Slack and Drive that the company has to grant first. A graph of who works well with whom also reads, to the people in it, a lot like being watched.
+    carried:
+      to: /notebook/claim-graph/
+      label: "Later, the same instinct pointed at papers: claim-graph"

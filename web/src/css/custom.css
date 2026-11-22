@@ -9412,9 +9412,10 @@ a:hover > .ocl-home__featureCover {
 
 /* Navbar with eight sections (2026-10-25): below 1240px the search shrinks to
    its icon and opens when clicked, and the links sit a little closer, so the
-   last section never runs under the search box. */
-@media (min-width: 997px) and (max-width: 1240px) {
-  .navbar__items--left .navbar__link {
+   last section never runs under the search box. Ten sections since
+   2026-11-22, so the same happens below 1400px. */
+@media (min-width: 997px) and (max-width: 1400px) {
+  .navbar__items:not(.navbar__items--right) .navbar__link {
     padding-inline: 0.45rem;
   }
 
@@ -9443,7 +9444,7 @@ a:hover > .ocl-home__featureCover {
   }
 }
 
-@media (min-width: 997px) and (max-width: 1240px) {
+@media (min-width: 997px) and (max-width: 1400px) {
   /* the profile icons are on the home card and /about; here they cost the room
      the eighth section needs */
   .navbar__items--right .navbar__item.ocl-nav-icon {
@@ -9454,12 +9455,12 @@ a:hover > .ocl-home__featureCover {
     padding-inline: 0.75rem;
   }
 
-  .navbar__items--left .navbar__link {
+  .navbar__items:not(.navbar__items--right) .navbar__link {
     padding-inline: 0.38rem;
   }
 }
 
-@media (min-width: 997px) and (max-width: 1240px) {
+@media (min-width: 997px) and (max-width: 1400px) {
   /* a plugin rule outranks the plain selector; this one wins */
   .navbar .navbar__search .navbar__search-input {
     width: 2.6rem;
@@ -9477,10 +9478,10 @@ a:hover > .ocl-home__featureCover {
   }
 }
 
-/* About: eight sections now, so two rows of four on a wide screen */
+/* About: nine sections now, so three rows of three on a wide screen */
 @media (min-width: 1100px) {
   .ocl-rooms {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -11221,3 +11222,212 @@ a:hover > .ocl-home__featureCover {
 .ocl-garden__more {
   height: 1px;
 }
+
+/* --- unfinished: projects started and stopped partway (2026-11-22) --- */
+.ocl-unf__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ocl-unf__card {
+  scroll-margin-top: 5rem;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border: 1px solid var(--ocl-rule);
+  border-left: 6px solid var(--tone);
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+}
+
+/* name on the left, the strip beside it: the card's first line is its whole life */
+.ocl-unf__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  align-items: end;
+  gap: 1.25rem 2.5rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-unf__title {
+  margin: 0;
+  font-family: var(--ocl-prose);
+  font-size: 1.7rem;
+  line-height: 1.15;
+}
+
+.ocl-unf__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ocl-unf__title a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.ocl-unf__what {
+  max-width: 34rem;
+  margin: 0.35rem 0 0;
+  font-family: var(--ocl-prose);
+  font-size: 1.05rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-unf__stack {
+  margin: 0.5rem 0 0;
+  font-family: var(--ocl-mono);
+  font-size: 0.76rem;
+  color: var(--ocl-ink-faint);
+}
+
+/* the strip: commits per month while it was alive, then the quiet since */
+.ocl-unf__strip {
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+.ocl-unf__active {
+  flex: 0 1 calc(var(--ocl-unf-n) * 1.35rem);
+  min-width: 4rem;
+  max-width: 70%;
+}
+
+.ocl-unf__bars {
+  display: grid;
+  grid-template-columns: repeat(var(--ocl-unf-n), minmax(0, 1fr));
+  height: 3.2rem;
+  border-bottom: 1.5px solid var(--ocl-ink-muted);
+}
+
+.ocl-unf__month {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: var(--ocl-radius-sm) var(--ocl-radius-sm) 0 0;
+}
+
+.ocl-unf__month i {
+  display: block;
+  width: min(62%, 0.7rem);
+  border-radius: var(--ocl-radius-sm) var(--ocl-radius-sm) 0 0;
+  background: var(--ocl-link);
+}
+
+.ocl-unf__month:hover {
+  background: color-mix(in srgb, var(--ocl-link) 9%, transparent);
+}
+
+.ocl-unf__month:hover i {
+  background: var(--ocl-link-hover);
+}
+
+.ocl-unf__month[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 0.35rem);
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--ocl-radius-sm);
+  background: var(--ocl-ink);
+  color: var(--ocl-paper);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.ocl-unf__quiet {
+  flex: 1 1 8rem;
+  min-width: 6rem;
+}
+
+.ocl-unf__dash {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 3.2rem;
+  border-bottom: 1.5px dashed var(--ocl-ink-faint);
+}
+
+.ocl-unf__dash span {
+  padding: 0 0.4rem 0.3rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ocl-ink-faint);
+  white-space: nowrap;
+}
+
+.ocl-unf__ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  color: var(--ocl-ink-faint);
+  white-space: nowrap;
+}
+
+/* the three answers side by side, since each is a short paragraph; never
+   two-and-one, which leaves the third alone under a gap */
+.ocl-unf__cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 2rem;
+  padding-top: 1.1rem;
+}
+
+@media (min-width: 900px) {
+  .ocl-unf__cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ocl-unf__cols p {
+  margin: 0;
+  font-family: var(--ocl-prose);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.ocl-unf__label {
+  margin: 0 0 0.35rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-unf__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.1rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .ocl-unf__card {
+    padding: 1.1rem 1rem 1rem;
+  }
+
+  .ocl-unf__head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ocl-unf__title {
+    font-size: 1.45rem;
+  }
+}
+
+.ocl-home__jump .ocl-chip--unfinished { background: var(--ocl-cloth-3); }

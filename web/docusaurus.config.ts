@@ -176,6 +176,7 @@ const config: Config = {
         { to: "/graphics", label: "Graphics", position: "left" },
         { to: "/shipped", label: "Shipped", position: "left" },
         { to: "/built", label: "Built", position: "left" },
+        { to: "/unfinished", label: "Unfinished", position: "left" },
         { to: "/someday", label: "Someday", position: "left" },
         { type: "search", position: "right" },
         { to: "/about", label: "About", position: "right" },

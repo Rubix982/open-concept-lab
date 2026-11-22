@@ -19,6 +19,7 @@
     "design:check": "node scripts/design-check.mjs",
     "idea": "node scripts/idea.mjs",
     "journal": "node scripts/journal.mjs",
+    "unfinished": "node scripts/unfinished.mjs",
     "check:papers": "node scripts/check-papers.mjs",
     "check:ledger": "node scripts/check-ledger.mjs",
     "check:threads-page": "node scripts/check-threads-page.mjs",

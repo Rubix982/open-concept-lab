@@ -22,6 +22,8 @@ const ROOMS: Room[] = [
     text: "Tools that are deployed and in use, each with a page of its own." },
   { to: "/built", art: "tabs/built", title: "Built", tone: 3,
     text: "Interactive pages I made to understand something." },
+  { to: "/unfinished", art: "tabs/unfinished", title: "Unfinished", tone: 3,
+    text: "Projects I started because I was sure something needed to exist, and stopped partway, with how far each got." },
   { to: "/someday", art: "tabs/someday", title: "Someday", tone: 4,
     text: "Things I want to do, try, learn or make, written down so my head can stop holding them. Not plans; lines I no longer have to remember." },
 ];

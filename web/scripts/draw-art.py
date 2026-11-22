@@ -210,6 +210,36 @@ def someday() -> str:
     return svg("A pinboard of notes, one still being pinned up, and a small lit bulb: ideas written down to be looked at later", GOLD, body, 71)
 
 
+def unfinished() -> str:
+    # bricks laid from the near bank, stopping short of the far one
+    def brick(x: int, y: int, w: int = 30) -> str:
+        return f'<rect x="{x}" y="{y}" width="{w}" height="14" rx="2" fill="{SALMON}" fill-opacity="0.8"/>'
+
+    top = [brick(196 + 32 * i, 214) for i in range(5)]          # upper course ends at 354
+    low = [brick(180 + 32 * i, 230) for i in range(5)]          # lower course ends at 338
+    body = f"""
+    <g transform="translate(300 214) scale(1.16) translate(-303 -250)">
+    <path d="M60 236 H200 L214 330 H60 Z" fill="#e9dcc3"/>
+    <path d="M430 236 H546 V330 H416 Z" fill="#e9dcc3"/>
+    {"".join(top)}
+    {"".join(low)}
+    <path d="M246 244 V322 M274 244 V322" stroke-width="2.4"/>
+    <path d="M246 322 H274" stroke-width="2"/>
+    <path d="M356 222 H430" stroke-width="2" stroke-dasharray="4 8" opacity="0.7"/>
+    <path d="M352 214 q-2 -16 6 -26" stroke="{SAGE}" stroke-width="2.4"/>
+    <path d="M356 196 q12 -8 18 2 q-10 6 -18 -2 Z" fill="{SAGE}" fill-opacity="0.8" stroke="{SAGE}" stroke-width="1.6"/>
+    <path d="M353 204 q-12 -6 -16 4 q10 4 16 -4 Z" fill="{SAGE}" fill-opacity="0.7" stroke="{SAGE}" stroke-width="1.6"/>
+    <rect x="92" y="222" width="26" height="12" rx="2" fill="{SALMON}" fill-opacity="0.6"/>
+    <rect x="122" y="222" width="26" height="12" rx="2" fill="{SALMON}" fill-opacity="0.6"/>
+    <rect x="106" y="208" width="26" height="12" rx="2" fill="{SALMON}" fill-opacity="0.6"/>
+    <path d="M488 236 V152" stroke-width="2.4"/>
+    <path d="M488 154 L530 166 L488 180 Z" fill="{INDIGO}" fill-opacity="0.35"/>
+    <path d="M214 330 q 16 -8 32 0 t 32 0 t 32 0 t 32 0 t 32 0 t 32 0" stroke="{INDIGO}" stroke-width="1.8" opacity="0.55"/>
+    <path d="M230 348 q 16 -8 32 0 t 32 0 t 32 0 t 32 0 t 32 0" stroke="{INDIGO}" stroke-width="1.6" opacity="0.4"/>
+    </g>"""
+    return svg("A brick bridge laid partway across a river, the rest of its path a dashed line, a sprout growing from the last brick: projects started and not finished", SALMON, body, 83)
+
+
 # --- projects ---------------------------------------------------------------
 
 
@@ -361,6 +391,7 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/built": built,
     "tabs/about": about,
     "tabs/someday": someday,
+    "tabs/unfinished": unfinished,
     "projects/edit-slice": edit_slice,
     "projects/edit-reach": edit_reach,
     "projects/rome-neighbors": rome_neighbors,
