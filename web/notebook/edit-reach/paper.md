@@ -63,7 +63,7 @@ paper:
     - "Evidence that it does not predict an edit's effect: a raw correlation of rho = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed."
     - A measurement of why there is little to predict - whose fact you edit is worth about sixty-three times what you change it to - on a pre-stated test.
     - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
-    - The measure repurposed as a contamination screen, with one published benchmark scored on it, released as editreach.
+    - The measure repurposed as a contamination screen, released as editreach, with its model-free half released as editscreen - the released files of two published benchmarks scored on it, and the matcher's own precision measured against 441 hand-labelled items.
     - A universal upper bound on an edit's reach, derived in one line and shown to be vacuous where propagation lives - its median far-field value permits a question that never names the edited subject to receive more than one that does.
     - "A second class of candidate eliminated for what sets the magnitude: no property of the edited subject predicts it either, to within the effect 41 subjects can resolve."
 ---
@@ -86,7 +86,7 @@ If the measure cannot predict an edit's reach, can anything bound it? The same a
 
 The magnitude is not a property of the edited person either. Neither how widely known they are, nor how many facts depend on them, predicts how hard an edit lands — to within the smallest effect 41 subjects can resolve.
 
-What survives is the one thing the number does well. It is high exactly when the edited name is in the prompt, so it can read an evaluation item and say whether that item is able to test propagation at all. One published benchmark <Cite id="cohen2024ripple" /> has a test type built to check two-hop propagation whose prompts contain the edited name; those items take a median **0.982** of the update against a **0.065** floor.
+What survives is the one thing the number does well. It is high exactly when the edited name is in the prompt, so it can read an evaluation item and say whether that item is able to test propagation at all. One published benchmark <Cite id="cohen2024ripple" /> has a test type built to check two-hop propagation whose prompts contain the edited name; those items take a median **0.982** of the update against a **0.065** floor. The same question — does the item name the edited subject — can be put to a whole released file without a model, and the answer turns out to be a property of the file rather than of the benchmark: two files published under the name MQuAKE differ by a factor of **177**.
 
 One more result came off the same probe set, and it was not the one we were looking for. A single edit does two things: it breaks the old answer, and it supplies the new one. Those two halves come apart. Each is carried by a different control on the same probes, which means the correct control depends on which half is being measured.
 
@@ -385,15 +385,27 @@ Each value came from one device and each device returned one value, and the conn
 
 Before any of the above could be trusted, the log files had to be worth keeping. A census found that **124 of 155 committed log files were a single line naming themselves and nothing else** — 80% of the kept record was content-free. The cause was one import: five run scripts import another as a library for its loaders, and that module calls `logs.setup()` at module scope, so every dry-run pass and every run of five other scripts created a log recording nothing. `setup()` now holds the run header and emits it immediately before the first real record, with the file handler opened lazily. Importing a module costs nothing on disk; running it still produces a self-describing log.
 
+### 4.3 What survives of the measure is a second program, and it never loads a model
+
+<Gist>The coefficient needs the model. The question it is good for does not, so that question was split out and released on its own.</Gist>
+
+<Lead>The coefficient is read off the edit's key, so taking it costs a forward pass through a hosted model.</Lead> The question §5.5 is really asking of a benchmark item — does this prompt contain the name of the subject whose fact was changed — costs nothing of the kind. Splitting the two is what makes it possible to screen corpora this project cannot afford to put through a model, and it is why there are two packages rather than one.
+
+`editscreen` 0.2.0a4 reads a released benchmark file and returns one verdict per item. **STRICT** means the subject's own surface form occurs in the probe. **ALIAS** means only a name variant does — a surname alone, a given name, a supplied alias. **CLEAN** means neither.
+
+<Lead>STRICT is the one quoted, because it is a lower bound.</Lead> Everything it finds is in the text. What it misses is every item that picks the subject out without naming them — *"the author of The Man of Feeling was born in"* contains no name and identifies Henry Mackenzie — and catching those needs a knowledge base or a model. So every rate in §5.8 is lower than the true one and never higher.
+
+<Lead>The two benchmarks hand the screen different things, and the difference decides what a verdict can be wrong about.</Lead> MQuAKE records the edited subject as a string, so the screen is told what to look for and a wrong verdict can only be a wrong word boundary. RippleEdits records it as a Wikidata item id, so the name has to be recovered from the entry's own test prompts before anything can be looked for, and a wrong verdict can also be wrong about which person it names. §5.8 measures both.
+
 ## 5. Results
 
-<Gist>Seven results, in the order the evidence forced them rather than the order we wanted.</Gist>
+<Gist>Eight results, in the order the evidence forced them rather than the order we wanted.</Gist>
 
 The first two are about the number this paper proposes, and both are negative. It does not predict how far an edit moves the model, and where a question avoids the edited name it cannot tell one edit from another.
 
 The next two say why. Most of what an edit does follows from whose fact was changed rather than from what it was changed to, so there was very little left for any predictor to find. And the effect is not one thing but two, which come apart under the same controls.
 
-The last three take what survives. One scores a published benchmark with it. One derives a ceiling on an edit's reach and finds the ceiling forbids nothing. The last rules out a second family of explanation for how hard an edit lands.
+The last four take what survives. One scores a published benchmark with it. One derives a ceiling on an edit's reach and finds the ceiling forbids nothing. One rules out a second family of explanation for how hard an edit lands. The last takes the same reading to every item of six released files, without a model at all, and finds that how contaminated a propagation set is depends on which file you downloaded.
 
 ### 5.1 A number computable before the edit tracks how far the model moved, until a control removes almost all of it
 
@@ -775,7 +787,7 @@ That is a property of what the model learned. This is a property of what the ben
 
 <Lead>The same split has been reached from the other end.</Lead> <Cite id="shi2026write" narrative /> divides multi-hop items by **which hop was edited**: when the edited hop is the last one the answer is the newly written object itself, and only when an unedited hop follows is that object merely a bridge the model has to read. That is this section's observation approached from the opposite side, by authors editing with fine-tuning rather than a rank-one update, and it is the reason to think the observation is a property of these benchmarks rather than of this project's reading of them.
 
-It also gives the screen something to do. That paper reports lifting the two-hop curse **on RippleEdits**, and RippleEdits is where the contaminated test type is. Which of its items could have tested propagation is a question the coefficient answers before any edit is applied — and this paper does not run that check, so it is an offer rather than a result.
+It also gives the screen something to do. That paper reports lifting the two-hop curse **on RippleEdits**, and RippleEdits is where the contaminated test type is. Which of its items could have tested propagation is a question the coefficient answers before any edit is applied. §5.8 runs the half of that check that needs no model, over every item of all three released subsets, and reports the rate. It does not score the individual items with the coefficient, which is what would say of any one item whether it could have tested propagation — so the per-item offer stays an offer.
 
 <Data caption={<>Direct exposure of the edited subject in two multi-hop benchmarks, counted over the released sets.</>}>
   <thead>
@@ -881,6 +893,38 @@ Recomputing over only the four probe families that every subject shares leaves p
 
 Neither is textual frequency, and nothing here measures it. That remains the obvious thing to try, and the two nulls make it a narrower target than it was: an exposure mechanism would now have to be invisible to the model's own confidence on the fact being edited.
 
+### 5.8 How often a propagation question names the entity it edits is set by which file you downloaded
+
+<Gist>§5.5 counted exposure by reading a prompt template and a hop field. Here the same count is taken over every item of six released files, by string match and without a model. Two files published under one benchmark's name differ by a factor of 177.</Gist>
+
+<Lead>Neither of §5.5's two readings generalises.</Lead> One looked at a test type whose prompt template a person can read. The other used MQuAKE's hop field, which happens to record where the edit sits and has no counterpart elsewhere. Neither says what fraction of a file a user who downloads it is affected by, and that fraction is the thing a user needs. A string matcher gives it, and §4.3 is what the matcher is.
+
+<Lead>A matcher is an instrument, so its own error rate comes before any rate it produces.</Lead> 441 items were drawn stratified by verdict and labelled by hand with the verdict hidden — 261 from MQuAKE, and 180 from RippleEdits, twenty from each of its three subsets crossed with each of the three verdicts. The strict rule has not yet been seen to be wrong: **100%** on the MQuAKE items and **100%** on each of the three RippleEdits subsets.<Prov id="C-010" /> The looser alias rule is right **90.2%** of the time (95% CI 75.8–100.0) on a held-out MQuAKE draw, and 95.0% to 100% per RippleEdits subset. Intervals resample the case or the entry rather than the item, because three questions sharing one case are not three independent draws. The samples, the labels and the scorer are in `editscreen`'s `validation/` directory.
+
+<Lead>On RippleEdits a verdict can also be wrong about who it is looking for, and that was checked apart from the rest.</Lead> The name is recovered from the entry's own prompts, so those prompts cannot adjudicate it — a recovered name that is wrong but consistent with them would be invisible. Each drawn entry's Wikidata item was resolved to its English label instead, and the labeller was shown that beside the recovered string. Across the 166 distinct entries behind those 180 items the recovery never named the wrong entity, including where the two strings share no words: `Camp Rucker Theatre` against *Fort Rucker Theatre*, `Carolina Paz Santana de la Hoz` against *Leslie Santana*. What it does get wrong is the shape of the string — 28 of the 180 carried a trailing clause lifted from the benchmark's own phrasing — and a malformed string is harder to find in a probe, so that error costs coverage and cannot inflate a rate below.
+
+<Data caption={<>Every item of six released files, screened for the name of the entity whose fact the item edits. Quote the middle column: it is a lower bound, because a probe that identifies the subject without naming them reads clean.</>}>
+  <thead>
+    <tr><th>File</th><th className="n">scored over</th><th className="n">names it outright</th><th className="n">including variants</th><th className="n">subject recoverable</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>MQuAKE-T</td><td className="n">5,604 questions</td><td className="n">0.37%</td><td className="n">0.82%</td><td className="n">given</td></tr>
+    <tr><td>MQuAKE-CF-3k</td><td className="n">9,000 questions</td><td className="n">65.4%</td><td className="n">67.0%</td><td className="n">given</td></tr>
+    <tr><td>MQuAKE-CF</td><td className="n">27,654 questions</td><td className="n">65.0%</td><td className="n">66.4%</td><td className="n">given</td></tr>
+    <tr><td>RippleEdits recent</td><td className="n">1,948 entries</td><td className="n">79.6%</td><td className="n">89.8%</td><td className="n">75.0%</td></tr>
+    <tr><td>RippleEdits random</td><td className="n">1,922 entries</td><td className="n">51.9%</td><td className="n">90.2%</td><td className="n">85.0%</td></tr>
+    <tr><td>RippleEdits popular</td><td className="n">885 entries</td><td className="n">56.4%</td><td className="n">85.1%</td><td className="n">81.8%</td></tr>
+  </tbody>
+</Data>
+
+The MQuAKE rates are over every question in the file.<Prov id="E-048" /> The RippleEdits rates are over the entries whose subject could be recovered at all, which is the last column; an entry whose subject cannot be read is skipped rather than counted clean, because counting it clean is the one error that would quietly lower the rate being measured.
+
+<Lead>Two files shipped under the name MQuAKE differ by a factor of 177.</Lead> MQuAKE-T names the edited entity in 0.37% of its questions and MQuAKE-CF-3k in 65.4%. §5.5 gives the reason and it is structural rather than careless: a multi-hop question has to name the entity its chain starts from, so a file that puts the edit on the chain head names the edited entity nearly always — and MQuAKE-CF-3k puts it there in 65.1% of cases against MQuAKE-T's 0.4%.
+
+<Lead>All three RippleEdits subsets sit inside MQuAKE-CF's range.</Lead> So the 177-fold gap is not a spread across propagation benchmarks with MQuAKE-T at the clean end of it. It is a gap between two files published under one name, and every other released file measured here sits at the contaminated end with MQuAKE-CF.
+
+<Lead>That makes the choice of file an experimental variable, and one that is currently invisible.</Lead> A propagation result quoted on MQuAKE-CF-3k and one quoted on MQuAKE-T are not measuring the same thing, and nothing in either file's name says so.
+
 ## 6. Findings and claims
 
 <Gist>Every claim made here, each with the observation that would show it false.</Gist>
@@ -978,6 +1022,14 @@ The table below is every claim this paper has made, numbered in the order they w
     falsifier={<><strong>Analytic in its first half, empirical in its second.</strong> The bound — the delivered fraction is at most the ratio of the two key norms — is refuted by an error in its derivation or by the update ceasing to be rank one with a fixed direction. Its looseness is refuted if the far-field median falls below 10 on any model-layer pair — at which point the bound would forbid something.</>}>
     A universal upper bound on an edit's reach exists and costs one line, and its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives.
   </Finding>
+  <Finding id="F‑17" status="standing" value="0.37% / 65.4%"
+    falsifier={<><strong>Refuted if</strong> a re-score of the released files with a matcher of stated precision puts MQuAKE-T above 5%, or MQuAKE-CF-3k below 50%, or any RippleEdits subset below 5%.</>}>
+    How often a propagation question names the entity whose fact was edited is set by which file was downloaded rather than by which benchmark it belongs to. Two files published as MQuAKE differ by a factor of 177, and all three RippleEdits subsets sit inside the higher one's range.
+  </Finding>
+  <Finding id="F‑18" status="standing" value="100% / 90.2%"
+    falsifier={<><strong>Refuted by</strong> one hand-labelled item on which the strict rule fires and the probe does not contain the subject's name. The alias figure is refuted if its precision falls below 75.8% on a further held-out draw, which is the bottom of its interval. <strong>Both rest on one labeller</strong>, and §7.13 says what that costs.</>}>
+    The rule carrying every rate in §5.8 has not been seen to be wrong on 441 hand-labelled items across two benchmarks, and the looser alias rule is right about nine times in ten.
+  </Finding>
   <Finding id="F‑16" status="standing" value="+0.005 / −0.053"
     falsifier={<><strong>Refuted if</strong> either predictor reaches a correlation of 0.37 in magnitude on a larger subject set, which is the smallest effect 41 subjects could have seen. <strong>This is no evidence of an effect, not evidence of no effect</strong>, and a reader taking it as the second is taking more than the interval gives.</>}>
     Neither a subject's prominence nor its dependent count predicts how hard an edit hits, with every partial and covariate-controlled variant also spanning zero.
@@ -1012,7 +1064,8 @@ Every qualification in this paper is collected here, so the body above runs unhe
 11. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
 12. <Lead>Which ROME implementation wrote these edits is not recorded.</Lead> The 42 edits were read from a cache and the page names no implementation. <Cite id="gupta2024rebuilding" narrative /> shows that ROME's *disabling edits* — which collapse a model outright — are an artifact of irregularities in the original implementation rather than of the algorithm, and that a corrected one removes them. So the provenance of these edits is a question this paper cannot answer, and the per-run directories that would have answered it are gone (Appendix B). The anchor gate in §3.2 returning exactly 1.000 is evidence the pipeline read them correctly, not evidence that the edits themselves are well formed.
 
-13. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+13. <Lead>Every exposure rate in §5.8 rests on one labeller, and that labeller is a model.</Lead> The 441 items were labelled with the verdict hidden, but by a single annotator, so there is no agreement rate. Two blind 25-item subsets are drawn and unfilled; until a second labeller fills them, the precision figures say how consistently one labeller agreed with the matcher, not how often the matcher is right. The matchers are also Western-name-shaped — variants are derived by splitting on whitespace into given and family parts — and both corpora are English questions over Wikidata entities, which is the friendliest case they will meet.
+14. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
@@ -1026,7 +1079,7 @@ It tells you nothing about whether an edit travelled.
 
 The two statements are not in tension. The first is why the measure looked promising. The second is why it cannot do the job it was built for.
 
-<Lead>What survives is the first one.</Lead> A cheap screen that reads an evaluation item and says whether that item is able to test propagation at all — which one published benchmark fails.
+<Lead>What survives is the first one.</Lead> A cheap screen that reads an evaluation item and says whether that item is able to test propagation at all — which one published benchmark fails. Run over the released files of two benchmarks it says something sharper: failing is a property of the individual file. One file published as MQuAKE names the edited entity in 0.37% of its questions and another in 65.4%.
 
 Beside it stands a result the screen was not looking for. The two halves of a rank-one update come apart, and which control is the correct one depends on which half is being measured.
 
@@ -1131,6 +1184,8 @@ Saying this is not an excuse for the gap. It is the difference between a record 
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
   <Run id="E‑039" model="Llama‑3.1‑8B" n="32" date="15 Nov" out="E-039-log-census.json">Readings the result files overwrote, recovered from the committed logs</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
+  <Run id="E‑048" model="none" n="42,258" date="24 Nov" out="E-048-mquake-exposure.json">Every question of three released MQuAKE files screened for the edited entity's name — no model, no gradient, no edit</Run>
+  <Run id="C‑010" model="none" n="180" date="24 Nov" out="C-010-summary.md">The screen's own precision on RippleEdits, hand-labelled with the verdict hidden and each entry's Wikidata label shown for adjudication</Run>
 </Runs>
 
 ### B.1 The values themselves

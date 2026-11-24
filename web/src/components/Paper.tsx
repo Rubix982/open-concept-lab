@@ -348,7 +348,9 @@ export function Run({
     "https://github.com/Rubix982/edit-reach/blob/main/results/";
   // Space-separated, because a run that swept three models wrote three files
   // and naming one of them would be a quieter kind of wrong than naming none.
-  const files = out.split(" ").filter((o) => o.endsWith(".json"));
+  // A `.md` counts: the model-free screens wrote a committed summary page rather
+  // than a result file, and styling that as gone would say the opposite of true.
+  const files = out.split(" ").filter((o) => o.endsWith(".json") || o.endsWith(".md"));
   /* The id is typeset with a non-breaking hyphen so it never wraps mid-token.
      That character is not the one anybody types in a link, so the anchor is
      normalised to ASCII while the cell keeps the typeset form. */
