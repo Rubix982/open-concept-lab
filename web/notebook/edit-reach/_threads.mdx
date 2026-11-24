@@ -4,7 +4,7 @@
 
 ## The questions, in the order they were asked {#threads-cards}
 
-9 of 10 closed. Each row is one question that was held open alone until it closed.
+10 of 11 closed. Each row is one question that was held open alone until it closed.
 
 | # | The question | Opened | How it closed |
 | --- | --- | --- | --- |
@@ -18,10 +18,11 @@
 | `C-008` | Does a subject's prominence predict how hard an edit hits, where geometry does not? | 2026-11-09 | 2026-11-09 — branch 3. Neither predicts. Prominence +0.005 (95% CI −0.315, +0.314), dependent count −0.053 (−0.366, +0.270), over 41 subjects; all six partials and both covariate controls also span zero. The limit belongs with the number:… |
 | `C-009` | Is the site where these edits go in a site where the attribute actually lives? | 2026-11-15 | — still open |
 | `C-010` | Does the screen hold up on a benchmark that does not hand it the subject? | 2026-11-24 | 2026-11-24 — yes, on the branch the threshold named. Strict precision is 100% on all three subsets, against a threshold of 95% written down before any of the 180 items was labelled, so the floor claim survives a corpus that recovers its… |
+| `C-011` | Does a screen verdict mean the same thing on each of RippleEdits' six test types? | 2026-11-24 | 2026-11-24 — on branch 1 for five of the six types, and on branch 1 for the wrong reason on the sixth. Every prediction written down before the counts holds: the three types whose queries are about the edited subject screen at the top, the… |
 
 ## Questions that were answered along the way {#threads-answered}
 
-11 of 15. A thread is not work; it is a question that was not understood at the time.
+12 of 16. A thread is not work; it is a question that was not understood at the time.
 
 ### `T-001` · Can any screen bound an edit's damage from above, or only from below? {#thread-t-001}
 
@@ -89,6 +90,12 @@ Certified robustness is hard partly because the adversary picks a direction in a
 
 > Not scooped on any of the three. The nearest work in two of them does something structurally different, and one of those uses the same dataset without touching the question. 2026-11-18, one sweep pass.
 
+### `T-016` · What do RippleEdits' own test types look like once screened? {#thread-t-016}
+
+The editscreen RippleEdits adapter (0.2.0a3) runs, and its first output is not a result — nobody designed a card for it and nothing was pre-registered. Recorded here so it is not lost. On the strict rule the three subsets read 79.6% / 51.9% / 56.4% (recent / random / popular), over the 75–85% of…
+
+> Answered by C-011 on 2026-11-24, and it needed the benchmark's definitions read rather than a new draw. Every one of the six test types screens the way its own definition says it should: the three whose queries are about the edited subject sit at the top (CompositionalityI, RelationSpecificity,…
+
 ## Still open {#threads-open}
 
 Carried rather than closed. Each says what it is waiting for.
@@ -98,7 +105,7 @@ Carried rather than closed. Each says what it is waiting for.
 | `T-004` | A page built from the agent's own self-written reference loses to one built from outside sources | parked |
 | `T-009` | The serving GPU accounts for 1.4% of the observed drift. What accounts for the rest? | open — narrowed |
 | `T-013` | Does the direction a rank-one edit writes along carry the attribute? | open |
-| `T-016` | What do RippleEdits' own test types look like once screened? | open |
+| `T-017` | Does the adapter's longest-candidate rule pick an alias over the canonical name, and how often does that matter? | open |
 
 ## What was actually run {#threads-run}
 
