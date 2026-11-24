@@ -911,19 +911,41 @@ Neither is textual frequency, and nothing here measures it. That remains the obv
     <tr><td>MQuAKE-T</td><td className="n">5,604 questions</td><td className="n">0.37%</td><td className="n">0.82%</td><td className="n">given</td></tr>
     <tr><td>MQuAKE-CF-3k</td><td className="n">9,000 questions</td><td className="n">65.4%</td><td className="n">67.0%</td><td className="n">given</td></tr>
     <tr><td>MQuAKE-CF</td><td className="n">27,654 questions</td><td className="n">65.0%</td><td className="n">66.4%</td><td className="n">given</td></tr>
-    <tr><td>RippleEdits recent</td><td className="n">1,948 entries</td><td className="n">79.6%</td><td className="n">89.8%</td><td className="n">75.0%</td></tr>
-    <tr><td>RippleEdits random</td><td className="n">1,922 entries</td><td className="n">51.9%</td><td className="n">90.2%</td><td className="n">85.0%</td></tr>
-    <tr><td>RippleEdits popular</td><td className="n">885 entries</td><td className="n">56.4%</td><td className="n">85.1%</td><td className="n">81.8%</td></tr>
+    <tr><td>RippleEdits recent</td><td className="n">16,315 prompts</td><td className="n">79.6%</td><td className="n">89.8%</td><td className="n">75.0%</td></tr>
+    <tr><td>RippleEdits random</td><td className="n">11,731 prompts</td><td className="n">51.9%</td><td className="n">90.2%</td><td className="n">85.0%</td></tr>
+    <tr><td>RippleEdits popular</td><td className="n">10,046 prompts</td><td className="n">56.4%</td><td className="n">85.1%</td><td className="n">81.8%</td></tr>
   </tbody>
 </Data>
 
-The MQuAKE rates are over every question in the file.<Prov id="E-048" /> The RippleEdits rates are over the entries whose subject could be recovered at all, which is the last column; an entry whose subject cannot be read is skipped rather than counted clean, because counting it clean is the one error that would quietly lower the rate being measured.
+The MQuAKE rates are over every question in the file.<Prov id="E-048" /> The RippleEdits rates are over every test prompt belonging to an entry whose subject could be recovered at all — 1,461, 1,633 and 724 entries of the 1,948, 1,922 and 885 released, which is the last column. An entry whose subject cannot be read is skipped rather than counted clean, because counting it clean is the one error that would quietly lower the rate being measured. *Corrected 24 Nov 2026: this column said `entries` and the rates are over prompts. No rate moved.*
 
 <Lead>Two files shipped under the name MQuAKE differ by a factor of 177.</Lead> MQuAKE-T names the edited entity in 0.37% of its questions and MQuAKE-CF-3k in 65.4%. §5.5 gives the reason and it is structural rather than careless: a multi-hop question has to name the entity its chain starts from, so a file that puts the edit on the chain head names the edited entity nearly always — and MQuAKE-CF-3k puts it there in 65.1% of cases against MQuAKE-T's 0.4%.
 
 <Lead>All three RippleEdits subsets sit inside MQuAKE-CF's range.</Lead> So the 177-fold gap is not a spread across propagation benchmarks with MQuAKE-T at the clean end of it. It is a gap between two files published under one name, and every other released file measured here sits at the contaminated end with MQuAKE-CF.
 
 <Lead>That makes the choice of file an experimental variable, and one that is currently invisible.</Lead> A propagation result quoted on MQuAKE-CF-3k and one quoted on MQuAKE-T are not measuring the same thing, and nothing in either file's name says so.
+
+<Lead>Inside a file, the rate is not one number either, and what it varies with is the benchmark's own vocabulary.</Lead> RippleEdits sorts every query into six declared test types, and three of them ask about the edited subject while one asks about a different entity reached through it. Each type's definition therefore predicts whether its queries should contain the edited name, and the six predictions were written down from the benchmark's paper <Cite id="cohen2024ripple" /> before any count was read.<Prov id="C-011" />
+
+<Data caption={<>Strict rate per declared test type, over the test prompts of recoverable entries. The rows are ordered by what the definitions predict, not by the counts; reading the table top to bottom is the result.</>}>
+  <thead>
+    <tr><th>Test type</th><th>The query is about</th><th className="n">recent</th><th className="n">random</th><th className="n">popular</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Compositionality I</td><td>the edited subject</td><td className="n">0.989</td><td className="n">0.656</td><td className="n">0.868</td></tr>
+    <tr><td>Relation Specificity</td><td>the edited subject</td><td className="n">0.891</td><td className="n">0.660</td><td className="n">0.729</td></tr>
+    <tr><td>Forgetfulness</td><td>the edited subject</td><td className="n">0.965</td><td className="n">0.997</td><td className="n">0.973</td></tr>
+    <tr><td>Logical Generalization</td><td>the subject, or either object</td><td className="n">0.621</td><td className="n">0.451</td><td className="n">0.402</td></tr>
+    <tr><td>Subject Aliasing</td><td>an alias of the subject</td><td className="n">0.163</td><td className="n">0.265</td><td className="n">0.114</td></tr>
+    <tr><td>Compositionality II</td><td>a different entity, reached through the subject</td><td className="n">0.011</td><td className="n">0.000</td><td className="n">0.018</td></tr>
+  </tbody>
+</Data>
+
+Every prediction holds, in all three subsets. The types that ask about the edited subject sit at the top, the type that asks about somebody else sits at the bottom, and the mixed type sits between them. Subject Aliasing rises from 0.114–0.265 to 0.622–0.904 once name variants count, which is that test type working rather than failing.
+
+<Lead>The type built to be clean is 99.1% clean, not clean.</Lead> 20 of Compositionality II's 2,285 prompts carry the edited name. Nine name it outright because the chain runs through it. The other eleven carry it inside a different entity's name — *"the father of **Jacques Genest** jr."*, *"the child of the founder of **Axel Springer** SE"*, *"the siblings of the screenwriter of **Michael Jackson**'s Thriller"*. A son, a company and a film, each named after the person whose fact was edited. The name is in front of the model in all twenty, which is what the screen claims to detect; what the last eleven are not is items *about* the edited subject.
+
+<Lead>One of the six numbers is a property of this screen rather than of the corpus, and it is Subject Aliasing's.</Lead> The adapter recovers the subject as the longest string the entry's own prompts offer, so when that string is an alias lifted out of an aliasing prompt, the screen reports that same prompt as naming the subject — it read the name out of the prompt and then found it there. That accounts for 682 of 1,067 strict hits on this type, 78% of them on `random` against 34% on `recent`. It is 1.8% of all prompts screened and it inflates this type's strict rate, not its alias rate, because those prompts would have read as a variant match anyway.
 
 ## 6. Findings and claims
 
@@ -1022,6 +1044,10 @@ The table below is every claim this paper has made, numbered in the order they w
     falsifier={<><strong>Analytic in its first half, empirical in its second.</strong> The bound — the delivered fraction is at most the ratio of the two key norms — is refuted by an error in its derivation or by the update ceasing to be rank one with a fixed direction. Its looseness is refuted if the far-field median falls below 10 on any model-layer pair — at which point the bound would forbid something.</>}>
     A universal upper bound on an edit's reach exists and costs one line, and its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives.
   </Finding>
+  <Finding id="F‑19" status="standing" value="6 of 6"
+    falsifier={<><strong>Refuted if</strong> any test type whose definition says its queries are about the edited subject screens below a type whose definition says they are not, in any released subset. The predictions were committed before the counts were read; the commit is in the provenance row.</>}>
+    Which of a benchmark's items name the edited subject is predictable from the benchmark's own written definitions. All six of RippleEdits' declared test types screen in the order their definitions imply, in all three subsets.
+  </Finding>
   <Finding id="F‑17" status="standing" value="0.37% / 65.4%"
     falsifier={<><strong>Refuted if</strong> a re-score of the released files with a matcher of stated precision puts MQuAKE-T above 5%, or MQuAKE-CF-3k below 50%, or any RippleEdits subset below 5%.</>}>
     How often a propagation question names the entity whose fact was edited is set by which file was downloaded rather than by which benchmark it belongs to. Two files published as MQuAKE differ by a factor of 177, and all three RippleEdits subsets sit inside the higher one's range.
@@ -1065,7 +1091,8 @@ Every qualification in this paper is collected here, so the body above runs unhe
 12. <Lead>Which ROME implementation wrote these edits is not recorded.</Lead> The 42 edits were read from a cache and the page names no implementation. <Cite id="gupta2024rebuilding" narrative /> shows that ROME's *disabling edits* — which collapse a model outright — are an artifact of irregularities in the original implementation rather than of the algorithm, and that a corrected one removes them. So the provenance of these edits is a question this paper cannot answer, and the per-run directories that would have answered it are gone (Appendix B). The anchor gate in §3.2 returning exactly 1.000 is evidence the pipeline read them correctly, not evidence that the edits themselves are well formed.
 
 13. <Lead>Every exposure rate in §5.8 rests on one labeller, and that labeller is a model.</Lead> The 441 items were labelled with the verdict hidden, but by a single annotator, so there is no agreement rate. Two blind 25-item subsets are drawn and unfilled; until a second labeller fills them, the precision figures say how consistently one labeller agreed with the matcher, not how often the matcher is right. The matchers are also Western-name-shaped — variants are derived by splitting on whitespace into given and family parts — and both corpora are English questions over Wikidata entities, which is the friendliest case they will meet.
-14. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+14. <Lead>One per-type rate in §5.8 is partly manufactured by the screen that reports it.</Lead> The RippleEdits adapter has no subject string to work from — the benchmark names its subject by Wikidata id — so it recovers the longest name the entry's own prompts offer. When that name is an alias taken out of an aliasing prompt, the screen reports that prompt as naming the subject, having read the name out of it. 682 of Subject Aliasing's 1,067 strict hits are of that kind, and the share moves from 34% to 78% across the three subsets, so it is not a constant that could be subtracted. It is 1.8% of all prompts screened and no rate outside that one test type depends on it.
+15. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
@@ -1185,6 +1212,7 @@ Saying this is not an excuse for the gap. It is the difference between a record 
   <Run id="E‑039" model="Llama‑3.1‑8B" n="32" date="15 Nov" out="E-039-log-census.json">Readings the result files overwrote, recovered from the committed logs</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
   <Run id="E‑048" model="none" n="42,258" date="24 Nov" out="E-048-mquake-exposure.json">Every question of three released MQuAKE files screened for the edited entity's name — no model, no gradient, no edit</Run>
+  <Run id="C‑011" model="none" n="38,092" date="24 Nov" out="C-011-ripple-by-test-type.json C-011-denominators.json">Every test prompt of three RippleEdits subsets, by the benchmark's six declared test types. Predictions committed at <code>8e7d69a</code> before any count was read; runner at <code>agents/engineer/workspace/run_c011_test_types.py</code></Run>
   <Run id="C‑010" model="none" n="180" date="24 Nov" out="C-010-summary.md">The screen's own precision on RippleEdits, hand-labelled with the verdict hidden and each entry's Wikidata label shown for adjudication</Run>
 </Runs>
 
