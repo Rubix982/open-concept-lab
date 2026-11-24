@@ -4,7 +4,7 @@
 
 ## The questions, in the order they were asked {#threads-cards}
 
-10 of 11 closed. Each row is one question that was held open alone until it closed.
+11 of 12 closed. Each row is one question that was held open alone until it closed.
 
 | # | The question | Opened | How it closed |
 | --- | --- | --- | --- |
@@ -19,10 +19,11 @@
 | `C-009` | Is the site where these edits go in a site where the attribute actually lives? | 2026-11-15 | — still open |
 | `C-010` | Does the screen hold up on a benchmark that does not hand it the subject? | 2026-11-24 | 2026-11-24 — yes, on the branch the threshold named. Strict precision is 100% on all three subsets, against a threshold of 95% written down before any of the 180 items was labelled, so the floor claim survives a corpus that recovers its… |
 | `C-011` | Does a screen verdict mean the same thing on each of RippleEdits' six test types? | 2026-11-24 | 2026-11-24 — on branch 1 for five of the six types, and on branch 1 for the wrong reason on the sixth. Every prediction written down before the counts holds: the three types whose queries are about the edited subject screen at the top, the… |
+| `C-012` | Does the rule that recovers a subject's name decide any rate the paper publishes? | 2026-11-24 | 2026-11-24 — branch 2. It decides a large one. Restricting the canonical pick to the five non-aliasing test types moves the strict rate up by 2.4, 18.8 and 9.8 points on recent / random / popular, where the paper had asserted the rule… |
 
 ## Questions that were answered along the way {#threads-answered}
 
-12 of 17. A thread is not work; it is a question that was not understood at the time.
+13 of 18. A thread is not work; it is a question that was not understood at the time.
 
 ### `T-001` · Can any screen bound an edit's damage from above, or only from below? {#thread-t-001}
 
@@ -96,6 +97,12 @@ The editscreen RippleEdits adapter (0.2.0a3) runs, and its first output is not a
 
 > Answered by C-011 on 2026-11-24, and it needed the benchmark's definitions read rather than a new draw. Every one of the six test types screens the way its own definition says it should: the three whose queries are about the edited subject sit at the top (CompositionalityI, RelationSpecificity,…
 
+### `T-017` · Does the adapter's longest-candidate rule pick an alias over the canonical name, and how often does that matter? {#thread-t-017}
+
+[C-011] found that 682 of 1,067 SubjectAliasing strict hits are circular — the adapter recovered the subject label out of an aliasing prompt and then reported that same prompt as naming the subject. 78% on random, 34% on recent. The recovery takes the longest candidate across all six test types,…
+
+> Answered by [C-012] on 2026-11-24, and the second question came back the opposite way round. Restricting the canonical pick to the five non-aliasing test types moves the strict rate up — 0.796→0.820, 0.519→0.707, 0.564→0.662 on recent / random / popular — where the thread and §5.8 both expected the…
+
 ## Still open {#threads-open}
 
 Carried rather than closed. Each says what it is waiting for.
@@ -105,8 +112,8 @@ Carried rather than closed. Each says what it is waiting for.
 | `T-004` | A page built from the agent's own self-written reference loses to one built from outside sources | parked |
 | `T-009` | The serving GPU accounts for 1.4% of the observed drift. What accounts for the rest? | open — narrowed |
 | `T-013` | Does the direction a rank-one edit writes along carry the attribute? | open |
-| `T-017` | Does the adapter's longest-candidate rule pick an alias over the canonical name, and how often does that matter? | open |
 | `T-018` | Does our own Full Vector implementation reproduce MIB's published number for it? | open |
+| `T-019` | Which recovery rule should `editscreen` publish, now that two of them disagree by eighteen points? | open |
 
 ## What was actually run {#threads-run}
 
