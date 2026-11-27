@@ -34,3 +34,8 @@ projects:
     plan: projects/opz/plan.md
     notebook: /notebook/opz/
     tone: draft
+
+  - name: scooping
+    plan: projects/scooping/plan.md
+    notebook: /notebook/scooping/
+    tone: provisional

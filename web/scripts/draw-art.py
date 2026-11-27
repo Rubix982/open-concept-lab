@@ -305,6 +305,20 @@ def opz() -> str:
     return svg("A container with a heartbeat line that stumbles and recovers, a wrench and a checklist: a small broken system, fixed", SALMON, body, 27)
 
 
+def scooping() -> str:
+    body = f"""
+    <path d="M150 104 H362 V300" opacity="0.35"/>
+    <path d="M136 116 H348 V312" opacity="0.6"/>
+    <path d="M122 128 H334 V324 H122 Z" fill="#fffdf8"/>
+    <path d="M146 152 H170 V176 H146 Z M146 198 H170 V222 H146 Z M146 244 H170 V268 H146 Z M146 290 H170 V314 H146 Z" stroke-width="2"/>
+    <path d="M186 164 H300 M186 210 H286 M186 256 H304 M186 302 H270" stroke-width="1.6" opacity="0.6"/>
+    <path d="M150 164 l6 7 l11 -13 M150 210 l6 7 l11 -13 M150 256 l6 7 l11 -13" stroke="{SAGE}" stroke-width="2.8"/>
+    <path d="M150 294 l16 16 M166 294 l-16 16" stroke="{OXIDE}" stroke-width="2.8"/>
+    <circle cx="420" cy="196" r="62" fill="{GOLD}" fill-opacity="0.35"/>
+    <path d="M392 186 H448 M392 206 H436" stroke-width="1.6" opacity="0.6"/>
+    <path d="M464 240 L522 300" stroke-width="9"/>"""
+    return svg("A claim card with four slots, three ticked and one crossed, under a magnifying glass: a direction checked part by part", INDIGO, body, 31)
+
 def edit_reach() -> str:
     """Rings spreading from an edit, a caliper that only spans the near ones."""
     rings = []
@@ -397,6 +411,7 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "projects/rome-neighbors": rome_neighbors,
     "projects/claim-graph": claim_graph,
     "projects/opz": opz,
+    "projects/scooping": scooping,
     "pages/mech-interp-2026": the_field,
     "pages/writing-here": writing_here,
 }

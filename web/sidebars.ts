@@ -81,6 +81,7 @@ const sidebars: SidebarsConfig = {
     project("rome-neighbors", "geometry", []),
     project("claim-graph", "claims as nodes", []),
     project("opz", "deployment labs", []),
+    project("scooping", "has it been done?", []),
     { type: "doc", id: "writing-here", label: "Writing here" },
   ],
 };

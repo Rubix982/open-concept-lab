@@ -16,3 +16,6 @@
 [submodule "ai/edit-reach"]
 	path = ai/edit-reach
 	url = https://github.com/Rubix982/edit-reach.git
+[submodule "projects/scooping"]
+	path = projects/scooping
+	url = https://github.com/Rubix982/scooping.git

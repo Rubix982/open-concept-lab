@@ -496,7 +496,7 @@ luo2026knowledgesmith:
   field: Knowledge editing
   area: Forgetting and unlearning
   verified: true
-  projects: [edit-slice, edit-reach]
+  projects: [edit-slice, edit-reach, scooping]
   gives_me: "Editing over-spreads and unlearning under-spreads (§5.2.1), and hierarchy level — root, intermediate, leaf — sets distinct accuracy ceilings. Read 2026-11-09: it does NOT test out-degree, which this entry and edit-slice/CLAUDE.md both said it did. Those words never appear, and no frequency variable is used."
 
 rinberg2025ripplebench:
@@ -510,8 +510,8 @@ rinberg2025ripplebench:
   field: Evaluating edits
   area: Ripple effects and multi-hop
   verified: true
-  projects: [edit-slice]
-  gives_me: "Distance-stratified propagation curves for eight UNLEARNING methods, with distance from WikiRAG semantic neighbours. Its cross-model result is the close parallel to ours: delta curves nearly identical across four models, read as ripple being a property of the method rather than the base model. NOTE: distance is semantic retrieval, not a pluggable graph metric — see [R-011]."
+  projects: [edit-slice, scooping]
+  gives_me: "Distance-stratified propagation curves for eight UNLEARNING methods, with semantic distance. Its cross-model result is the close parallel to ours: delta curves nearly identical across four models, read as ripple being a property of the method rather than the base model. CORRECTED 2026-11-28: every version names knowledge-graph path length as a possible distance, and v2 and v3 call the framework agnostic to it; it never runs path length (its default is bge-base cosine similarity, §3.3). The note here before, from [R-011], said the opposite."
 
 chaudhury2026forgetting:
   title: "Forgetting is Not Erasure: Recovering Latent Knowledge via Transport Keys"
