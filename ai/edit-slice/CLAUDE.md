@@ -217,6 +217,23 @@ page. It should get harder to change over time.
   and this line is not a plan until someone has read their code. What it does
   give us is the cross-model result — delta curves nearly identical across four
   models — which parallels [E-032].
+  *Corrected 2026-11-27 [scooping T-012]:* the 2026-10-03 correction above is
+  itself half wrong. **RippleBench v2 (17 Jun 2026) and v3 (14 Jul 2026) do
+  advertise a pluggable distance and name graph path length as an option**:
+  *"The framework is agnostic to the choice of distance function:
+  knowledge-graph path length is one valid instantiation, but so are RAG rank
+  and embedding cosine similarity"* (§2; again in §3.1, §3.2 and the
+  conclusion). Even v1 (3 Dec 2025) says
+  *"semantic distance can be instantiated in many ways; for example, via
+  embedding-space similarity, path length in a knowledge graph, or as the rank
+  position of responses returned by a RAG system"* (§3.1); v2 and v3 add the explicit "agnostic" and "substitutable
+  end-to-end" wording. So the correction was wrong for every version. What still holds: **the paper
+  never runs path length** — *"We use cosine similarity of bge-base embeddings
+  as our default distance"* (§3.3) — and its eight methods are unlearning, not
+  editing. So graph path length is an advertised option nobody has run, and
+  "not a drop-in until someone has read their code" stands. Found by a scoop-check
+  backtest whose methods read beat this entry; see
+  `~/code/scooping/backtests/T-012/`.
 - **Forgetting is Not Erasure** (2606.02860) — apparent forgetting may be
   interface drift, recoverable by stitching with transport keys. If so, "damage"
   is accessibility loss, not destruction. *Corrected 2026-10-03 [R-011b]:* the
