@@ -1,10 +1,10 @@
 ---
-title: scooping
+title: Checking whether a mechanistic interpretability idea has been scooped
 sidebar_position: 6
 description: Deciding whether a research direction has already been done, by writing it as a four-part claim and checking each paper's methods section against all four parts.
 ---
 
-# scooping
+# Checking whether a mechanistic interpretability idea has been scooped
 
 My advisors asked for a defensible way to decide whether a direction had been scooped
 before the work went further. The failure I had actually seen was not a missed paper.
