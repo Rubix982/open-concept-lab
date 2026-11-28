@@ -157,9 +157,17 @@ function PaperCover({ paper, onOpenRow }: { paper: Paper; onOpenRow: (id: string
 
 type StatusFilter = "all" | "read" | "skimmed" | "to-read";
 type CheckFilter = "all" | "checked" | "unchecked";
-type Filters = { q: string; field: string | null; area: string | null; status: StatusFilter; check: CheckFilter };
+type Filters = {
+  q: string;
+  field: string | null;
+  area: string | null;
+  status: StatusFilter;
+  check: CheckFilter;
+  /** A project name from papers.yml `projects:`; the Research page links here with it. */
+  project: string | null;
+};
 
-const NO_FILTERS: Filters = { q: "", field: null, area: null, status: "all", check: "all" };
+const NO_FILTERS: Filters = { q: "", field: null, area: null, status: "all", check: "all", project: null };
 /** Covers shown per area before "Show all": about one row at full width. */
 const SHELF_PREVIEW = 6;
 
@@ -170,6 +178,7 @@ function matches(paper: Paper, f: Filters, ignore: "none" | "field" | "area" = "
   if (f.status !== "all" && paper.status !== f.status) return false;
   if (f.check === "checked" && !paper.verified) return false;
   if (f.check === "unchecked" && paper.verified) return false;
+  if (f.project && !paper.projects.includes(f.project)) return false;
   const q = f.q.trim().toLowerCase();
   if (!q) return true;
   return [paper.title, paper.authors, paper.venue, paper.gives_me, paper.field, paper.area, String(paper.year)]
@@ -177,7 +186,7 @@ function matches(paper: Paper, f: Filters, ignore: "none" | "field" | "area" = "
 }
 
 function isFiltered(f: Filters): boolean {
-  return f.q.trim() !== "" || f.field !== null || f.area !== null || f.status !== "all" || f.check !== "all";
+  return f.q.trim() !== "" || f.field !== null || f.area !== null || f.status !== "all" || f.check !== "all" || f.project !== null;
 }
 
 /** Filters live in the query string, so a filtered view can be linked to. */
@@ -191,6 +200,7 @@ function readFilters(): Filters {
     area: params.get("area"),
     status: status === "read" || status === "skimmed" || status === "to-read" ? status : "all",
     check: check === "checked" || check === "unchecked" ? check : "all",
+    project: params.get("project"),
   };
 }
 
@@ -201,6 +211,7 @@ function writeFilters(f: Filters): void {
   if (f.area) params.set("area", f.area);
   if (f.status !== "all") params.set("status", f.status);
   if (f.check !== "all") params.set("check", f.check);
+  if (f.project) params.set("project", f.project);
   const search = params.toString();
   history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`);
 }
@@ -249,6 +260,11 @@ function FilterBar({
         n: papers.filter((p) => areaOf(p) === area && matches(p, filters, "area")).length,
       }))
     : [];
+  // Each project's count under the other filters, so an option says what choosing it would show.
+  const projects = [...new Set(papers.flatMap((p) => p.projects))].sort().map((name) => ({
+    name,
+    n: papers.filter((p) => p.projects.includes(name) && matches(p, { ...filters, project: null })).length,
+  }));
   const set = (patch: Partial<Filters>) => setFilters({ ...filters, ...patch });
   return (
     <div className="ocl-filter" role="search">
@@ -273,6 +289,20 @@ function FilterBar({
           onChange={(check) => set({ check })}
           options={[["all", "Any citation"], ["checked", "Checked"], ["unchecked", "Unchecked"]]}
         />
+        <label className="ocl-garden__select">
+          <select
+            aria-label="Project"
+            value={filters.project ?? ""}
+            onChange={(e) => set({ project: e.target.value || null })}
+          >
+            <option value="">Any project</option>
+            {projects.map(({ name, n }) => (
+              <option key={name} value={name}>
+                {name} ({n})
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       <div className="ocl-filter__areas" role="group" aria-label="Field">
         <button

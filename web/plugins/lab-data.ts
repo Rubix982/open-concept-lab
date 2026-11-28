@@ -63,6 +63,22 @@ export type Project = {
   kind: string;
   /** Where the code is: the project's own repository, or its folder in this one. */
   repo: string;
+  /** The project's overall write-up, when it has one. The notebook holds the experiments. */
+  writeup?: Writeup;
+};
+
+/** A write-up, read from the front matter of the notebook page that carries it. */
+export type Writeup = {
+  title: string;
+  /** The page's `description`: one plain sentence of what it found. */
+  description: string;
+  href: string;
+  /** From a working paper's `paper:` block: "Working paper", "v1.2", "9 Nov 2026". */
+  kind?: string;
+  version?: string;
+  updated?: string;
+  /** The paper's own `reading:` line when it states one, else words / 230. */
+  reading: string;
 };
 
 export type WritingEntry = {
@@ -613,6 +629,36 @@ function phaseLabel(phase: string): string {
 
 const REPO_URL = "https://github.com/Rubix982/open-concept-lab";
 
+/**
+ * `notebook/edit-reach/paper.md` -> its title, description and URL. The URL
+ * follows Docusaurus's own rule for a doc without a slug: the path under the
+ * docs folder, extension dropped, `index` meaning the folder itself. A file
+ * that cannot be read fails the build, because a Research entry linking to a
+ * missing page is worse than no entry.
+ */
+async function loadWriteup(siteDir: string, file: string): Promise<Writeup> {
+  const fileContent = await fs.readFile(path.join(siteDir, file), "utf8");
+  const { frontMatter, content } = await parseMarkdownFile({
+    filePath: file,
+    fileContent,
+    parseFrontMatter: DEFAULT_PARSE_FRONT_MATTER,
+  });
+  const fm = frontMatter as Record<string, unknown>;
+  const paper = (fm.paper ?? {}) as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" && v.length > 0 ? v : undefined);
+  if (fm.slug !== undefined) throw new Error(`${file}: a write-up with a slug is not handled yet`);
+  const route = file.replace(/\.mdx?$/, "").replace(/(^|\/)index$/, "$1");
+  return {
+    title: str(fm.title) ?? path.basename(route),
+    description: str(fm.description) ?? "",
+    href: `/${route}`,
+    kind: str(paper.kind),
+    version: str(paper.version),
+    updated: str(paper.updated),
+    reading: str(paper.reading) ?? `${Math.max(1, Math.round(countWords(content) / 230))}-minute read`,
+  };
+}
+
 async function loadProjects(
   repoRoot: string,
   entries: {
@@ -623,7 +669,9 @@ async function loadProjects(
     what?: string;
     kind?: string;
     repo?: string;
+    writeup?: string;
   }[],
+  siteDir: string,
 ): Promise<Project[]> {
   return Promise.all(
     entries.map(async (entry) => {
@@ -651,6 +699,7 @@ async function loadProjects(
       const updated = /_Last updated:\s*(\d{4}-\d{2}-\d{2})/.exec(markdown);
 
       return {
+        writeup: entry.writeup ? await loadWriteup(siteDir, entry.writeup) : undefined,
         name: entry.name,
         phase: phaseLabel(phaseDetail),
         phaseDetail,
@@ -973,6 +1022,7 @@ export default async function labData(
             what?: string;
             kind?: string;
             repo?: string;
+            writeup?: string;
           }[];
         }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
 
@@ -1024,7 +1074,7 @@ export default async function labData(
         venues,
         built,
         unfinished,
-        projects: await loadProjects(repoRoot, rawProjects),
+        projects: await loadProjects(repoRoot, rawProjects, siteDir),
       };
     },
 

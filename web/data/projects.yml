@@ -12,6 +12,9 @@
 #         the home page's Research section; practice (opz) has /labs.
 #   repo: optional link to the code, when it lives in its own repository.
 #         Without it, the link points at the plan's folder in this one.
+#   writeup: optional path, relative to web/, of the page that is the
+#         project's overall write-up. /research lists these; the notebook
+#         holds the experiments behind them.
 
 projects:
   - name: edit-slice
@@ -19,12 +22,14 @@ projects:
     notebook: /notebook/edit-slice/
     tone: draft
     kind: research
+    writeup: notebook/edit-slice/review.md
 
   - name: edit-reach
     plan: ai/edit-reach/plan.md
     notebook: /notebook/edit-reach/
     tone: draft
     kind: research
+    writeup: notebook/edit-reach/paper.md
 
   - name: rome-neighbors
     plan: ai/rome-neighbors/plan.md
@@ -51,3 +56,4 @@ projects:
     tone: provisional
     kind: research
     repo: https://github.com/Rubix982/scooping
+    writeup: notebook/scooping/index.md

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import { usePluginData } from "@docusaurus/useGlobalData";
-import type { LabData, Project } from "@site/plugins/lab-data";
+import type { LabData, Project, Writeup } from "@site/plugins/lab-data";
 import PageArt from "@site/src/components/PageArt";
 import Stage from "@site/src/components/writing/Stage";
 
@@ -40,6 +40,39 @@ export function ProjectCard({ project }: { project: Project }): ReactNode {
       </span>
     </Link>
   );
+}
+
+/** "Working paper v1.2 · 9 Nov 2026 · 62-minute read", from what the write-up states. */
+export function writeupMeta(w: Writeup): string {
+  const kind = [w.kind, w.version].filter(Boolean).join(" ");
+  return [kind, w.updated, w.reading].filter(Boolean).join(" · ");
+}
+
+/**
+ * A project's write-up as a card, in the same frame as the project card: the
+ * project's drawing, the write-up's title, its one-sentence description.
+ */
+export function WriteupCard({ project }: { project: Project & { writeup: Writeup } }): ReactNode {
+  const w = project.writeup;
+  return (
+    <Link className="ocl-home__project ocl-project" to={w.href}>
+      <PageArt name={project.name} kind="projects" />
+      <span className="ocl-project__body">
+        <span className="ocl-home__projectName">{w.title}</span>
+        <span className="ocl-project__phase">
+          <Stage status={project.tone} label={false} />
+          {project.name}
+        </span>
+        <span className="ocl-home__projectWhat">{w.description}</span>
+        <span className="ocl-home__projectDate">{writeupMeta(w)}</span>
+      </span>
+    </Link>
+  );
+}
+
+/** The projects that have a write-up, in projects.yml order. */
+export function withWriteup(projects: Project[]): (Project & { writeup: Writeup })[] {
+  return projects.filter((p): p is Project & { writeup: Writeup } => p.writeup !== undefined);
 }
 
 /**

@@ -3,30 +3,64 @@ import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { usePluginData } from "@docusaurus/useGlobalData";
-import type { LabData, Project } from "@site/plugins/lab-data";
+import type { LabData, Project, Writeup } from "@site/plugins/lab-data";
 import Stage from "@site/src/components/writing/Stage";
+import { withWriteup, writeupMeta } from "@site/src/components/Projects";
 
 /**
- * The research projects, on a page of their own.
+ * Research: the overall write-up of each project that has one.
  *
- * The notebook index lists every project, research or not, and reaches each
- * one's pages through the docs sidebar. This page keeps to the projects marked
- * `kind: research` in data/projects.yml and adds what a reader outside the work
- * needs next: where the code is and how much of the reading list it rests on.
- * Same `ocl-garden` shell and card as the notebook and writing indexes.
+ * The notebook holds the experiments; this page holds what they add up to. A
+ * write-up is named by `writeup:` in data/projects.yml and stays at its notebook
+ * URL, so nothing that links to it breaks. Its title, description, version and
+ * date come from the page's own front matter. Research projects without a
+ * write-up are listed after, so a project is never missing here just because it
+ * has not been written up. Same `ocl-garden` shell as the notebook and writing
+ * indexes.
  */
 
-/** "28 Nov 2026" */
-function shortDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(iso));
+function WriteupEntry({
+  project,
+  papers,
+}: {
+  project: Project & { writeup: Writeup };
+  papers: number;
+}): ReactNode {
+  const art = useBaseUrl(`/img/art/projects/${project.name}.svg`);
+  const w = project.writeup;
+  return (
+    <article className="ocl-garden__card">
+      <Link to={w.href} className="ocl-garden__link">
+        <span className="ocl-garden__picture">
+          <img src={art} alt="" loading="lazy" decoding="async" />
+        </span>
+        <span className="ocl-garden__body">
+          <span className="ocl-garden__meta">
+            <Stage status={project.tone} label={false} />
+            <span>{project.name}</span>
+          </span>
+          <span className="ocl-garden__title">{w.title}</span>
+          <span className="ocl-garden__summary">{w.description}</span>
+          <span className="ocl-garden__meta">{writeupMeta(w)}</span>
+        </span>
+      </Link>
+      <p className="ocl-garden__pages">
+        {project.notebook !== w.href ? <Link to={project.notebook}>Experiments</Link> : null}
+        <a href={project.repo} target="_blank" rel="noreferrer">
+          Code ↗
+        </a>
+        {papers > 0 ? (
+          <Link to={`/reading?project=${project.name}`}>
+            {papers} {papers === 1 ? "paper" : "papers"} in Reading
+          </Link>
+        ) : null}
+      </p>
+    </article>
+  );
 }
 
-function ResearchCard({ project, papers }: { project: Project; papers: number }): ReactNode {
+/** A research project with no write-up yet: its drawing, objective and phase, to its notebook page. */
+function Unwritten({ project }: { project: Project }): ReactNode {
   const art = useBaseUrl(`/img/art/projects/${project.name}.svg`);
   return (
     <article className="ocl-garden__card">
@@ -40,60 +74,59 @@ function ResearchCard({ project, papers }: { project: Project; papers: number })
           <span className="ocl-garden__meta" title={project.phaseDetail}>
             <Stage status={project.tone} label={false} />
             <span>{project.phase}</span>
-            {project.updated ? <span>Plan updated {shortDate(project.updated)}</span> : null}
           </span>
         </span>
       </Link>
-      <p className="ocl-garden__pages">
-        <Link to={project.notebook}>Notebook page</Link>
-        <a href={project.repo} target="_blank" rel="noreferrer">
-          Code ↗
-        </a>
-        {papers > 0 ? (
-          <Link to="/reading">
-            {papers} {papers === 1 ? "paper" : "papers"} in Reading
-          </Link>
-        ) : null}
-      </p>
     </article>
   );
 }
 
 export default function Research(): ReactNode {
   const { projects, papers } = usePluginData("ocl-lab-data") as LabData;
-  const research = projects.filter((p) => p.kind === "research");
+  const written = withWriteup(projects);
+  const unwritten = projects.filter((p) => p.kind === "research" && !p.writeup);
   const fieldArt = useBaseUrl("/img/art/pages/mech-interp-2026.svg");
 
   return (
     <Layout
       title="Research"
-      description="The research projects: what each is trying to establish, where it stands, its notebook page and its code."
+      description="The overall write-up of each research project: what it set out to establish and what it found."
     >
       <main className="ocl-page ocl-research">
         <div className="ocl-index ocl-garden">
           <header className="ocl-garden__head">
-            <p className="ocl-garden__count" aria-label={`${research.length} research projects`}>
-              {research.length}
+            <p className="ocl-garden__count" aria-label={`${written.length} write-ups`}>
+              {written.length}
             </p>
             <h1 className="ocl-garden__heading">Research</h1>
             <p className="ocl-garden__lede">
-              Most of it asks how far an edit to one fact in a language model
-              spreads to other facts. The objective and phase on each card are
-              read from that project's own plan. The working state is on its{" "}
+              The overall write-up of each project that has reached one. The
+              experiments behind each are on the project's{" "}
               <Link to="/notebook">notebook</Link> page, and dated pieces are in{" "}
               <Link to="/writing">writing</Link>.
             </p>
           </header>
 
           <div className="ocl-garden__grid">
-            {research.map((project) => (
-              <ResearchCard
+            {written.map((project) => (
+              <WriteupEntry
                 key={project.name}
                 project={project}
                 papers={papers.filter((p) => p.projects.includes(project.name)).length}
               />
             ))}
           </div>
+
+          {unwritten.length > 0 ? (
+            <section className="ocl-garden__desk" aria-label="No write-up yet">
+              <h2 className="ocl-garden__deskTitle">No write-up yet</h2>
+              <div className="ocl-garden__grid">
+                {unwritten.map((project) => (
+                  <Unwritten key={project.name} project={project} />
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="ocl-garden__desk" aria-label="Around the research">
             <h2 className="ocl-garden__deskTitle">Around the research</h2>

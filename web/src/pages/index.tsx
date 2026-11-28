@@ -5,7 +5,7 @@ import { usePluginData } from "@docusaurus/useGlobalData";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
 import { AGENTIC, GUIDES, type Agentic, type Guide } from "@site/src/data/agentic";
-import { ProjectCard } from "@site/src/components/Projects";
+import { ProjectCard, WriteupCard, withWriteup } from "@site/src/components/Projects";
 import Profile from "@site/src/components/Profile";
 import { TabIcon } from "@site/src/components/TabIcons";
 
@@ -386,7 +386,7 @@ export default function Home(): ReactNode {
     .slice(0, 4);
 
   const [latest, ...earlier] = writing;
-  const research = projects.filter((p) => p.kind === "research");
+  const writeups = withWriteup(projects);
   const active = [...projects]
     .filter((p) => p.updated)
     .sort((a, b) => ((a.updated ?? "") < (b.updated ?? "") ? 1 : -1))[0];
@@ -474,8 +474,8 @@ export default function Home(): ReactNode {
 
         <dl className="ocl-home__stats">
           <div>
-            <dt>Research projects</dt>
-            <dd><CountUp value={research.length} /></dd>
+            <dt>Projects</dt>
+            <dd><CountUp value={projects.length} /></dd>
           </div>
           <div>
             <dt>Pieces of writing</dt>
@@ -506,9 +506,18 @@ export default function Home(): ReactNode {
         </dl>
 
         <section className="ocl-home__section">
-          <SectionHead art="who-loop" title="Research" kicker="each one's status is read from its own plan" href="/research" linkLabel="All research" />
+          <SectionHead art="lab-prove" title="Research" kicker="the overall write-up of each project that has one" href="/research" linkLabel="All research" />
           <div className="ocl-home__projects">
-            {research.map((project) => (
+            {writeups.map((project) => (
+              <WriteupCard key={project.name} project={project} />
+            ))}
+          </div>
+        </section>
+
+        <section className="ocl-home__section">
+          <SectionHead art="who-loop" title="Projects" kicker="each one's status is read from its own plan" href="/notebook" linkLabel="Notebook" />
+          <div className="ocl-home__projects">
+            {projects.map((project) => (
               <ProjectCard key={project.name} project={project} />
             ))}
           </div>
