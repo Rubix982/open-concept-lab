@@ -59,6 +59,10 @@ export type Project = {
   updated?: string;
   notebook: string;
   tone: string;
+  /** research | practice, from projects.yml. */
+  kind: string;
+  /** Where the code is: the project's own repository, or its folder in this one. */
+  repo: string;
 };
 
 export type WritingEntry = {
@@ -607,6 +611,8 @@ function phaseLabel(phase: string): string {
   return label.length > 0 ? label : phase;
 }
 
+const REPO_URL = "https://github.com/Rubix982/open-concept-lab";
+
 async function loadProjects(
   repoRoot: string,
   entries: {
@@ -615,10 +621,14 @@ async function loadProjects(
     notebook: string;
     tone?: string;
     what?: string;
+    kind?: string;
+    repo?: string;
   }[],
 ): Promise<Project[]> {
   return Promise.all(
     entries.map(async (entry) => {
+      const kind = entry.kind ?? "research";
+      const repo = entry.repo ?? `${REPO_URL}/tree/main/${path.posix.dirname(entry.plan)}`;
       let markdown = "";
       try {
         markdown = await fs.readFile(path.resolve(repoRoot, entry.plan), "utf8");
@@ -631,6 +641,8 @@ async function loadProjects(
           what: entry.what ?? "",
           notebook: entry.notebook,
           tone: entry.tone ?? "draft",
+          kind,
+          repo,
         } satisfies Project;
       }
 
@@ -646,6 +658,8 @@ async function loadProjects(
         updated: updated?.[1],
         notebook: entry.notebook,
         tone: entry.tone ?? "draft",
+        kind,
+        repo,
       } satisfies Project;
     }),
   );
@@ -957,6 +971,8 @@ export default async function labData(
             notebook: string;
             tone?: string;
             what?: string;
+            kind?: string;
+            repo?: string;
           }[];
         }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
 

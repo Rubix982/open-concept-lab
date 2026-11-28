@@ -386,6 +386,7 @@ export default function Home(): ReactNode {
     .slice(0, 4);
 
   const [latest, ...earlier] = writing;
+  const research = projects.filter((p) => p.kind === "research");
   const active = [...projects]
     .filter((p) => p.updated)
     .sort((a, b) => ((a.updated ?? "") < (b.updated ?? "") ? 1 : -1))[0];
@@ -426,6 +427,7 @@ export default function Home(): ReactNode {
             </p>
             <nav className="ocl-home__jump" aria-label="Sections">
               <Jump to="/writing" name="writing" label="Writing" />
+              <Jump to="/research" name="research" label="Research" />
               <Jump to="/notebook" name="notebook" label="Notebook" />
               <Jump to="/labs" name="labs" label="Labs" />
               <Jump to="/reading" name="reading" label="Reading" />
@@ -472,8 +474,8 @@ export default function Home(): ReactNode {
 
         <dl className="ocl-home__stats">
           <div>
-            <dt>Projects</dt>
-            <dd><CountUp value={projects.length} /></dd>
+            <dt>Research projects</dt>
+            <dd><CountUp value={research.length} /></dd>
           </div>
           <div>
             <dt>Pieces of writing</dt>
@@ -504,9 +506,9 @@ export default function Home(): ReactNode {
         </dl>
 
         <section className="ocl-home__section">
-          <SectionHead art="who-loop" title="Projects" kicker="each one's status is read from its own plan" href="/notebook" linkLabel="Notebook" />
+          <SectionHead art="who-loop" title="Research" kicker="each one's status is read from its own plan" href="/research" linkLabel="All research" />
           <div className="ocl-home__projects">
-            {projects.map((project) => (
+            {research.map((project) => (
               <ProjectCard key={project.name} project={project} />
             ))}
           </div>

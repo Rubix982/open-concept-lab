@@ -8,34 +8,46 @@
 #         Presentation only; nothing in plan.md encodes this.
 #   what: optional override, if the objective paragraph reads badly out of
 #         context. Prefer fixing the wording in plan.md instead.
+#   kind: research | practice. Research projects get the /research page and
+#         the home page's Research section; practice (opz) has /labs.
+#   repo: optional link to the code, when it lives in its own repository.
+#         Without it, the link points at the plan's folder in this one.
 
 projects:
   - name: edit-slice
     plan: ai/edit-slice/plan.md
     notebook: /notebook/edit-slice/
     tone: draft
+    kind: research
 
   - name: edit-reach
     plan: ai/edit-reach/plan.md
     notebook: /notebook/edit-reach/
     tone: draft
+    kind: research
 
   - name: rome-neighbors
     plan: ai/rome-neighbors/plan.md
     notebook: /notebook/rome-neighbors/
     tone: provisional
+    kind: research
 
   - name: claim-graph
     plan: ai/responsible-ai/knowledge-graph/plan.md
     notebook: /notebook/claim-graph/
     tone: standing
+    kind: research
 
   - name: opz
     plan: projects/opz/plan.md
     notebook: /notebook/opz/
     tone: draft
+    kind: practice
+    repo: https://github.com/Rubix982/opz
 
   - name: scooping
     plan: projects/scooping/plan.md
     notebook: /notebook/scooping/
     tone: provisional
+    kind: research
+    repo: https://github.com/Rubix982/scooping

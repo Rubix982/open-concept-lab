@@ -164,6 +164,7 @@ const config: Config = {
       },
       items: [
         { to: "/writing", label: "Writing", position: "left" },
+        { to: "/research", label: "Research", position: "left" },
         {
           type: "docSidebar",
           sidebarId: "notebookSidebar",

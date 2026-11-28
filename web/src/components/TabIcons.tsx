@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 /** Tiny line icons for the tabs: one stroke each, drawn at 16px. */
 export const TAB_ICONS: Record<string, ReactNode> = {
   writing: <path d="M3 13 6 7l5-4 2 2-4 5-6 3Z M3 13l3.6-3.6" />,
+  // a magnifier: the question being looked into
+  research: <path d="M7 11.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM10.3 10.3 13.5 13.5" />,
   notebook: <path d="M2.5 3.5Q5 3 8 4v9q-3-1-5.5-.5Z M8 4q3-1 5.5-.5v9Q11 12 8 13" />,
   labs: <path d="M6 2h4M6.8 2v4L3 13h10L9.2 6V2M5 10h6" />,
   reading: <path d="M3 3h7l3 3v7H3Z M5.5 7h5M5.5 9.5h4" />,

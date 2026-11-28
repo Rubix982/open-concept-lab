@@ -2660,7 +2660,8 @@ a.ocl-desk__day:focus-visible {
 
 /* The pages under a project, below its card. Outside the card's own link,
    because a link inside a link is not a thing. */
-.markdown .ocl-garden__pages {
+.markdown .ocl-garden__pages,
+.ocl-research .ocl-garden__pages {
   display: flex;
   flex-wrap: wrap;
   gap: 0 1rem;
@@ -7106,6 +7107,7 @@ a:hover > .ocl-home__featureCover {
 }
 
 .ocl-home__jump .ocl-chip--writing { background: var(--ocl-cloth-4); }
+.ocl-home__jump .ocl-chip--research { background: var(--ocl-cloth-5); }
 .ocl-home__jump .ocl-chip--notebook { background: var(--ocl-cloth-1); }
 .ocl-home__jump .ocl-chip--labs { background: var(--ocl-cloth-2); }
 .ocl-home__jump .ocl-chip--reading { background: var(--ocl-cloth-6); }
