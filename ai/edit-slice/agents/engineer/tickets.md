@@ -3976,6 +3976,41 @@ reading of the attribute drops stays untested on the one design that could settl
 it, and the claim in `myself.md` keeps resting on a confound that a reviewer can
 name in one sentence.
 
+**Status note 2026-11-28 — the blocker is an ACCESS TIER, not a library bug.**
+
+The reproducer was re-run against NDIF today. The server is now on nnsight **0.8.4**
+(`api.ndif.us/env`; our venv is still pinned to 0.8.1, which is its own drift). It no
+longer raises `OutOfOrderError`. Every arm, arm 1 included, now fails with a refusal
+that names its own remedy:
+
+    .../ndif/src/ndif/services/ray/sandbox/adapters.py, line 281, in refuse_backward
+    NotImplementedError: Backward passes need trusted access. This request is
+    untrusted, so it ran in a sandbox without the model's computation graph, where
+    gradients do not flow back into the model. To run backward passes, ask the
+    maintainers of this NDIF server for trusted access.
+
+The traceback is server-side, so the client version is not the variable. **Untrusted
+requests run in a sandbox that has no computation graph; backward is refused by
+design, not broken.** That is why arm 1 passed in October and fails now — the gate is
+new, and it is coarser than the one it replaced.
+
+What this changes:
+
+- The 2026-10-25 diagnosis ("NDIF refuses the gradient of any tensor the model
+  consumed, at every depth") described the 0.8.1 server accurately and no longer
+  describes the one we talk to. Keep it as the record of that server; do not quote it
+  as the current cause.
+- The ask is no longer "here is a bug". It is **"please grant this account trusted
+  access"**, which is what the error text itself instructs.
+- `rome.py`'s `compute_v` has a SEPARATE defect that trusted access would not fix: it
+  calls `loss.backward()` plainly and reads `out.grad` outside any backward block,
+  which is the pre-0.8 API. Both forms were measured locally on 0.8.1 and return an
+  identical gradient (norm 28176.8867 on SmolLM2-135M), so migrating to
+  `with loss.backward():` is numerically free and should happen before the next
+  remote attempt. The reproducer already uses the correct idiom; `compute_v` does not.
+
+**Updated:** 2026-11-28
+
 **Status note 2026-10-24 — BLOCKED on nnsight 0.8.1, not on design.**
 
 The design above is unchanged and still right. What stops it is that `v*`
